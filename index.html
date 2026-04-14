@@ -4,6 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Examora | Your AI Study Coach</title>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('exam_killer_settings');
+        let isDark = true; // Default to dark
+        if (saved) {
+          const settings = JSON.parse(saved);
+          if (settings.theme === 'dark') isDark = true;
+          else if (settings.theme === 'light') isDark = false;
+          else isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        } else {
+          isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        if (isDark) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

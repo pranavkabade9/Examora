@@ -18,6 +18,8 @@ interface LayoutProps {
 
 import Logo from './Logo';
 
+import BottomNav from './BottomNav';
+
 export default function Layout({ children, activeTab, setActiveTab, user, isGuest, onResetRequest, hasSyllabus }: LayoutProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -97,35 +99,11 @@ export default function Layout({ children, activeTab, setActiveTab, user, isGues
         </main>
 
         {/* Bottom Navigation - Mobile */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 bg-gradient-to-t from-white dark:from-[#050505] to-transparent pt-10">
-          <div className="glass-card bg-white/80 dark:bg-black/80 backdrop-blur-2xl border-slate-200 dark:border-white/10 rounded-3xl p-2 flex items-center justify-around shadow-2xl">
-            {navItems.filter(item => item.id !== 'syllabus').map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={cn(
-                  "flex flex-col items-center gap-1 p-3 rounded-2xl transition-all",
-                  activeTab === item.id 
-                    ? "text-blue-500 dark:text-blue-400 bg-blue-500/10" 
-                    : "text-slate-400 dark:text-white/40"
-                )}
-              >
-                <item.icon className="w-6 h-6" />
-                <span className="text-[10px] font-bold uppercase tracking-tighter">{item.label}</span>
-              </button>
-            ))}
-            <button
-              onClick={() => setIsSettingsOpen(true)}
-              className={cn(
-                "flex flex-col items-center gap-1 p-3 rounded-2xl transition-all",
-                isSettingsOpen ? "text-blue-500 dark:text-blue-400 bg-blue-500/10" : "text-slate-400 dark:text-white/40"
-              )}
-            >
-              <SettingsIcon className="w-6 h-6" />
-              <span className="text-[10px] font-bold uppercase tracking-tighter">Settings</span>
-            </button>
-          </div>
-        </nav>
+        <BottomNav 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          onSettingsClick={() => setIsSettingsOpen(true)} 
+        />
       </div>
 
       {/* Global Settings Components */}

@@ -103,10 +103,24 @@ function applyTheme(theme: Theme) {
   const root = window.document.documentElement;
   root.classList.remove('light', 'dark');
 
-  if (theme === 'system') {
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    root.classList.add(systemTheme);
-  } else {
-    root.classList.add(theme);
-  }
+  const updateTheme = () => {
+    root.classList.remove('light', 'dark');
+    if (theme === 'system') {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.classList.add(isDark ? 'dark' : 'light');
+    } else {
+      root.classList.add(theme);
+    }
+  };
+
+  updateTheme();
+
+  // Listen for system theme changes
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  const listener = () => {
+    if (theme === 'system') updateTheme();
+  };
+
+  mediaQuery.removeEventListener('change', listener);
+  mediaQuery.addEventListener('change', listener);
 }

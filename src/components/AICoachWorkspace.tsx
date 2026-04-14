@@ -94,54 +94,54 @@ export default function AICoachWorkspace({ syllabus, plan, memory, suggestions, 
 
   const LeftPanel = () => (
     <div className="flex flex-col gap-6 h-full">
-      <div className="glass-card p-5 space-y-4">
-        <div className="flex items-center gap-2 text-blue-500 dark:text-blue-400">
+      <div className="glass-card p-6 space-y-5">
+        <div className="flex items-center gap-3 text-blue-600 dark:text-blue-400">
           <Target className="w-5 h-5" />
-          <h3 className="font-bold uppercase tracking-wider text-xs">Current Focus</h3>
+          <h3 className="font-black uppercase tracking-widest text-[10px]">Current Focus</h3>
         </div>
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-slate-900 dark:text-white/90">
+        <div className="space-y-3">
+          <p className="text-sm font-black text-slate-900 dark:text-white/90 leading-tight">
             {syllabus?.title || "No Syllabus Loaded"}
           </p>
-          <div className="h-1.5 w-full bg-slate-500/5 dark:bg-white/5 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-500 w-1/3 rounded-full glow-blue" />
+          <div className="h-2 w-full bg-slate-500/10 dark:bg-white/5 rounded-full overflow-hidden">
+            <div className="h-full bg-blue-500 w-1/3 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
           </div>
-          <p className="text-[10px] text-slate-400 dark:text-white/40">33% of syllabus covered</p>
+          <p className="text-[10px] text-slate-500 dark:text-white/40 font-bold uppercase tracking-wider">33% of syllabus covered</p>
         </div>
       </div>
 
-      <div className="glass-card p-5 space-y-4">
-        <div className="flex items-center gap-2 text-orange-400">
+      <div className="glass-card p-6 space-y-5">
+        <div className="flex items-center gap-3 text-orange-500">
           <Brain className="w-5 h-5" />
-          <h3 className="font-bold uppercase tracking-wider text-xs">Weak Topics</h3>
+          <h3 className="font-black uppercase tracking-widest text-[10px]">Weak Topics</h3>
         </div>
         <div className="flex flex-wrap gap-2">
           {memory?.weakTopics?.length > 0 ? (
             memory.weakTopics.map((topic: string, i: number) => (
-              <span key={i} className="px-2 py-1 bg-orange-500/10 border border-orange-500/20 rounded-lg text-[10px] text-orange-200">
+              <span key={i} className="px-3 py-1.5 bg-orange-500/10 border border-orange-500/20 rounded-xl text-[10px] font-bold text-orange-600 dark:text-orange-300">
                 {topic}
               </span>
             ))
           ) : (
-            <p className="text-xs text-white/30 italic">No weak topics identified yet.</p>
+            <p className="text-xs text-slate-400 dark:text-white/30 italic">No weak topics identified yet.</p>
           )}
         </div>
       </div>
 
-      <div className="glass-card p-5 space-y-4">
-        <div className="flex items-center gap-2 text-purple-500 dark:text-purple-400">
+      <div className="glass-card p-6 space-y-5">
+        <div className="flex items-center gap-3 text-purple-600 dark:text-purple-400">
           <History className="w-5 h-5" />
-          <h3 className="font-bold uppercase tracking-wider text-xs">Recent Questions</h3>
+          <h3 className="font-black uppercase tracking-widest text-[10px]">Recent Questions</h3>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {history.filter(h => h.role === 'user').slice(-3).map((h, i) => (
             <button 
               key={i}
               onClick={() => handleAction(h.content)}
-              className="w-full text-left text-xs text-slate-400 dark:text-white/50 hover:text-slate-900 dark:hover:text-white/90 transition-colors line-clamp-1 flex items-center gap-2"
+              className="w-full text-left text-xs text-slate-500 dark:text-white/50 hover:text-blue-600 dark:hover:text-white/90 transition-colors line-clamp-1 flex items-center gap-3 group"
             >
-              <ChevronRight className="w-3 h-3 shrink-0" />
-              {h.content}
+              <ChevronRight className="w-3 h-3 shrink-0 group-hover:translate-x-1 transition-transform" />
+              <span className="font-medium">{h.content}</span>
             </button>
           ))}
         </div>
@@ -151,12 +151,12 @@ export default function AICoachWorkspace({ syllabus, plan, memory, suggestions, 
 
   const RightPanel = () => (
     <div className="flex flex-col gap-6 h-full">
-      <div className="glass-card p-5 space-y-4">
-        <div className="flex items-center gap-2 text-blue-400">
+      <div className="glass-card p-6 space-y-5">
+        <div className="flex items-center gap-3 text-blue-600 dark:text-blue-400">
           <Zap className="w-5 h-5" />
-          <h3 className="font-bold uppercase tracking-wider text-xs">Quick Actions</h3>
+          <h3 className="font-black uppercase tracking-widest text-[10px]">Quick Actions</h3>
         </div>
-        <div className="grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-1 gap-3">
           {[
             { label: "Explain Again", icon: RefreshCcw, action: "Can you explain the last topic again but simpler?" },
             { label: "Give Examples", icon: Sparkles, action: "Give me 3 more real-world examples for this." },
@@ -166,28 +166,28 @@ export default function AICoachWorkspace({ syllabus, plan, memory, suggestions, 
             <button
               key={i}
               onClick={() => handleAction(btn.action, btn.mode)}
-              className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-medium transition-all group"
+              className="flex items-center gap-3 p-4 bg-slate-500/5 dark:bg-white/5 hover:bg-slate-500/10 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-2xl text-xs font-bold transition-all group"
             >
-              <btn.icon className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
-              {btn.label}
+              <btn.icon className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+              <span className="text-slate-700 dark:text-white/80">{btn.label}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="space-y-4">
-              <div className="flex items-center gap-2 text-yellow-400 px-2">
-                <Sparkles className="w-5 h-5" />
-                <h3 className="font-bold uppercase tracking-wider text-xs">Examora Suggestions</h3>
-              </div>
-        <div className="space-y-3">
+      <div className="space-y-5">
+        <div className="flex items-center gap-3 text-yellow-600 dark:text-yellow-400 px-2">
+          <Sparkles className="w-5 h-5" />
+          <h3 className="font-black uppercase tracking-widest text-[10px]">Examora Suggestions</h3>
+        </div>
+        <div className="space-y-4">
           {suggestions?.map((s, i) => (
             <SuggestionCard key={i} suggestion={s} />
           ))}
           {(!suggestions || suggestions.length === 0) && (
-            <div className="glass-card p-5 text-center space-y-2 opacity-40">
-              <Loader2 className="w-6 h-6 animate-spin mx-auto" />
-              <p className="text-[10px] uppercase tracking-widest">Analyzing performance...</p>
+            <div className="glass-card p-8 text-center space-y-3 opacity-50">
+              <Loader2 className="w-6 h-6 animate-spin mx-auto text-slate-400" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Analyzing performance...</p>
             </div>
           )}
         </div>

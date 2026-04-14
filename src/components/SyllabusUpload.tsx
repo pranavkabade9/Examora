@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Calendar as CalendarIcon, Clock, ChevronRight, Loader2 } from 'lucide-react';
+import { Upload, FileText, Calendar as CalendarIcon, Clock, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { parseSyllabus, generateStudyPlan } from '../lib/gemini';
 import { db, auth } from '../lib/firebase';
@@ -128,38 +128,42 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="text-center space-y-2">
-        <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Build Your Examora Path</h2>
-        <p className="text-slate-500 dark:text-white/60 text-lg">Upload your syllabus and let Examora build your intelligent study strategy.</p>
+    <div className="max-w-5xl mx-auto space-y-10 pb-20 lg:pb-0">
+      <div className="text-center space-y-4">
+        <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-display">Build Your Examora Path</h2>
+        <p className="text-slate-500 dark:text-white/60 text-lg md:text-xl max-w-2xl mx-auto font-medium">Upload your syllabus and let Examora build your intelligent study strategy.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div className="glass-card p-6 space-y-4">
-            <h3 className="text-xl font-semibold flex items-center gap-2">
-              <FileText className="w-5 h-5 text-blue-400" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+        <div className="space-y-8">
+          <div className="glass-card p-6 md:p-10 space-y-6">
+            <h3 className="text-2xl font-black flex items-center gap-3 font-display">
+              <FileText className="w-8 h-8 text-blue-500" />
               Syllabus Input
             </h3>
             <div 
               {...getRootProps()} 
-              className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${
-                isDragActive ? 'border-blue-500 bg-blue-500/10' : 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
-              } ${file ? 'border-blue-500/50 bg-blue-500/5' : ''}`}
+              className={`border-2 border-dashed rounded-2xl p-10 md:p-16 text-center transition-all cursor-pointer ${
+                isDragActive ? 'border-blue-500 bg-blue-500/10' : 'border-slate-200 dark:border-white/10 hover:border-blue-500/50 dark:hover:border-blue-500/50'
+              } ${file ? 'border-blue-500/50 bg-blue-500/5' : 'bg-slate-500/5 dark:bg-white/5'}`}
             >
               <input {...getInputProps()} />
-              <Upload className={`w-8 h-8 mx-auto mb-2 ${file ? 'text-blue-500 dark:text-blue-400' : 'text-slate-300 dark:text-white/40'}`} />
+              <Upload className={`w-12 h-12 mx-auto mb-4 ${file ? 'text-blue-500 dark:text-blue-400' : 'text-slate-300 dark:text-white/20'}`} />
               {file ? (
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-blue-500 dark:text-blue-400">{file.name}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-white/40">Click to change file</p>
+                <div className="space-y-2">
+                  <p className="text-lg font-black text-blue-600 dark:text-blue-400">{file.name}</p>
+                  <p className="text-xs text-slate-400 dark:text-white/40 font-bold uppercase tracking-widest">Click to change file</p>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500 dark:text-white/60">Drag & drop PDF or click to browse</p>
+                <div className="space-y-2">
+                  <p className="text-base font-bold text-slate-600 dark:text-white/80">Drag & drop PDF or click to browse</p>
+                  <p className="text-xs text-slate-400 dark:text-white/40 font-medium">Max file size: 5MB</p>
+                </div>
               )}
             </div>
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-2 text-red-400 text-xs">
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-600 dark:text-red-400 text-sm font-bold">
+                <AlertCircle className="w-5 h-5 shrink-0" />
                 <p>{error}</p>
               </div>
             )}
@@ -168,53 +172,56 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Or paste your syllabus text here..."
-                className="w-full h-48 bg-slate-500/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20"
+                className="w-full h-64 bg-slate-500/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all resize-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 font-medium"
               />
             </div>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="glass-card p-6 space-y-6">
-            <h3 className="text-xl font-semibold flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5 text-purple-400" />
+        <div className="space-y-8">
+          <div className="glass-card p-6 md:p-10 space-y-8">
+            <h3 className="text-2xl font-black flex items-center gap-3 font-display">
+              <CalendarIcon className="w-8 h-8 text-purple-500" />
               Study Constraints
             </h3>
             
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm text-slate-500 dark:text-white/60">Exam Date</label>
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-white/40">Exam Date</label>
                 <input
                   type="date"
                   value={examDate}
                   onChange={(e) => setExamDate(e.target.value)}
-                  className="w-full bg-slate-500/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-900 dark:text-white"
+                  className="w-full bg-slate-500/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 md:p-5 focus:outline-none focus:ring-4 focus:ring-blue-500/20 text-slate-900 dark:text-white font-bold"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm text-slate-500 dark:text-white/60">Daily Study Hours: {hoursPerDay}h</label>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-white/40">Daily Study Hours</label>
+                  <span className="px-3 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-black text-sm">{hoursPerDay}h</span>
+                </div>
                 <input
                   type="range"
                   min="1"
                   max="16"
                   value={hoursPerDay}
                   onChange={(e) => setHoursPerDay(parseInt(e.target.value))}
-                  className="w-full accent-blue-500"
+                  className="w-full h-2 bg-slate-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm text-slate-500 dark:text-white/60">Difficulty Level</label>
-                <div className="grid grid-cols-3 gap-2">
+              <div className="space-y-3">
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-white/40">Difficulty Level</label>
+                <div className="grid grid-cols-3 gap-3">
                   {['easy', 'medium', 'hard'].map((level) => (
                     <button
                       key={level}
                       onClick={() => setDifficulty(level)}
-                      className={`py-2 rounded-lg text-sm capitalize transition-all ${
+                      className={`py-3 md:py-4 rounded-2xl text-sm font-black capitalize transition-all border ${
                         difficulty === level 
-                          ? 'bg-blue-500 text-white glow-blue' 
-                          : 'bg-slate-500/5 dark:bg-white/5 text-slate-500 dark:text-white/60 hover:bg-slate-500/10 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10'
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/20' 
+                          : 'bg-slate-500/5 dark:bg-white/5 text-slate-500 dark:text-white/60 hover:bg-slate-500/10 dark:hover:bg-white/10 border-slate-200 dark:border-white/10'
                       }`}
                     >
                       {level}
@@ -228,17 +235,17 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
           <button
             onClick={handleProcess}
             disabled={loading || (!text && !file) || !examDate}
-            className="w-full py-4 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all glow-blue"
+            className="w-full py-5 md:py-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-blue-500/20 group"
           >
             {loading ? (
-              <div className="flex items-center gap-3">
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span className="text-sm">{loadingStep || 'Processing...'}</span>
+              <div className="flex items-center gap-4">
+                <Loader2 className="w-6 h-6 animate-spin" />
+                <span className="text-lg">{loadingStep || 'Processing...'}</span>
               </div>
             ) : (
               <>
-                Build Examora Plan 🚀
-                <ChevronRight className="w-5 h-5" />
+                <span className="text-lg">Build Examora Plan</span>
+                <ChevronRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
               </>
             )}
           </button>

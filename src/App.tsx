@@ -38,7 +38,8 @@ export default function App() {
   const handleToggleTask = async (dayIndex: number, taskIndex: number) => {
     if (!plan) return;
 
-    const updatedPlan = { ...plan };
+    // Deep copy to ensure React detects changes
+    const updatedPlan = JSON.parse(JSON.stringify(plan));
     const task = updatedPlan.days[dayIndex].tasks[taskIndex];
     task.completed = !task.completed;
 
@@ -49,13 +50,14 @@ export default function App() {
     let updatedProgress = [...progress];
     
     if (task.completed) {
-      updatedProgress.push({
+      const newProgressRecord = {
         taskId,
         dayIndex,
         taskIndex,
         topic: task.topic,
         completedAt: new Date().toISOString()
-      });
+      };
+      updatedProgress.push(newProgressRecord);
       
       // Update AI Memory
       const updatedMemory = {
@@ -65,33 +67,33 @@ export default function App() {
       };
       setMemory(updatedMemory);
       if (user) await setDoc(doc(db, 'memories', user.uid), updatedMemory);
+
+      // Persist Progress to DB
+      if (user) {
+        await addDoc(collection(db, 'progress'), {
+          userId: user.uid,
+          ...newProgressRecord
+        });
+      }
     } else {
       updatedProgress = updatedProgress.filter(p => p.taskId !== taskId);
+      
+      // Remove Progress from DB
+      if (user) {
+        const q = query(collection(db, 'progress'), where('userId', '==', user.uid), where('taskId', '==', taskId));
+        const snap = await getDocs(q);
+        const deletePromises = snap.docs.map(d => deleteDoc(doc(db, 'progress', d.id)));
+        await Promise.all(deletePromises);
+      }
     }
 
     setProgress(updatedProgress);
 
-    // Persist
+    // Persist Plan
     if (isGuest) {
       saveGuestData({ plan: updatedPlan, progress: updatedProgress });
     } else if (user) {
-      // Save plan update
       await setDoc(doc(db, 'studyPlans', plan.id), updatedPlan);
-      
-      // Save progress record
-      if (task.completed) {
-        await addDoc(collection(db, 'progress'), {
-          userId: user.uid,
-          taskId,
-          topic: task.topic,
-          completedAt: new Date().toISOString()
-        });
-      } else {
-        // Delete progress record (simplified: we'd need the doc ID)
-        const q = query(collection(db, 'progress'), where('userId', '==', user.uid), where('taskId', '==', taskId));
-        const snap = await getDocs(q);
-        snap.forEach(async (d) => await deleteDoc(doc(db, 'progress', d.id)));
-      }
     }
   };
   
@@ -419,7 +421,7 @@ export default function App() {
             <StudyPlan plan={plan} onToggleTask={handleToggleTask} />
           )}
           {activeTab === 'analytics' && (
-            <Analytics />
+            <Analytics plan={plan} progress={progress} />
           )}
           {activeTab === 'chat' && (
             <AICoachWorkspace 
