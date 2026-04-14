@@ -1,0 +1,127 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Fields: uid, displayName, email, streak, lastActive, onboardingCompleted
+    //
+    // Collection: syllabi
+    // Fields: userId, title, content, createdAt
+    //
+    // Collection: studyPlans
+    // Fields: userId, syllabusId, examDate, hoursPerDay, difficulty, days, createdAt
+    //
+    // Collection: progress
+    // Fields: userId, planId, date, completedTasks, understandingLevel, feedback
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "pranavkabade9@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email']) &&
+             data.uid == request.auth.uid &&
+             isValidEmail(data.email) &&
+             (!('streak' in data) || data.streak is number) &&
+             (!('onboardingCompleted' in data) || data.onboardingCompleted is bool);
+    }
+
+    function isValidSyllabus(data) {
+      return data.keys().hasAll(['userId', 'title', 'content']) &&
+             data.userId == request.auth.uid &&
+             data.title is string && data.title.size() < 200 &&
+             data.content is map;
+    }
+
+    function isValidStudyPlan(data) {
+      return data.keys().hasAll(['userId', 'syllabusId', 'examDate', 'hoursPerDay', 'days']) &&
+             data.userId == request.auth.uid &&
+             data.hoursPerDay is number && data.hoursPerDay > 0 &&
+             data.days is list;
+    }
+
+    function isValidProgress(data) {
+      return data.keys().hasAll(['userId', 'planId', 'date']) &&
+             data.userId == request.auth.uid &&
+             data.planId is string &&
+             data.date is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+    }
+
+    match /syllabi/{syllabusId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidSyllabus(request.resource.data);
+      allow update: if isDocOwner() && isValidSyllabus(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /studyPlans/{planId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidStudyPlan(request.resource.data);
+      allow update: if isDocOwner() && isValidStudyPlan(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /progress/{progressId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidProgress(request.resource.data);
+      allow update: if isDocOwner() && isValidProgress(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /memories/{memoryId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isDocOwner();
+    }
+
+    match /conversations/{conversationId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isDocOwner();
+    }
+
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

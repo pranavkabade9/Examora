@@ -1,0 +1,120 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and study statistics",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "streak": { "type": "number" },
+        "lastActive": { "type": "string", "format": "date-time" },
+        "onboardingCompleted": { "type": "boolean" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Syllabus": {
+      "title": "Syllabus",
+      "description": "Structured syllabus data",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "content"]
+    },
+    "StudyPlan": {
+      "title": "StudyPlan",
+      "description": "The generated study schedule",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "syllabusId": { "type": "string" },
+        "examDate": { "type": "string", "format": "date" },
+        "hoursPerDay": { "type": "number" },
+        "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"] },
+        "days": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "syllabusId", "examDate", "hoursPerDay", "days"]
+    },
+    "Progress": {
+      "title": "Progress",
+      "description": "Daily feedback and task completion",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "planId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "completedTasks": { "type": "array" },
+        "understandingLevel": { "type": "object" },
+        "feedback": { "type": "string" }
+      },
+      "required": ["userId", "planId", "date"]
+    },
+    "Memory": {
+      "title": "Memory",
+      "description": "Long-term AI memory for the user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "weakTopics": { "type": "array", "items": { "type": "string" } },
+        "completedTopics": { "type": "array", "items": { "type": "string" } },
+        "performanceHistory": { "type": "array" },
+        "pastQuestions": { "type": "array" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Chat history with the AI Coach",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "messages": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "role": { "type": "string", "enum": ["user", "ai"] },
+              "content": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" }
+            }
+          } 
+        },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "messages"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/syllabi/{syllabusId}": {
+      "schema": "Syllabus",
+      "description": "User syllabi"
+    },
+    "/studyPlans/{planId}": {
+      "schema": "StudyPlan",
+      "description": "User study plans"
+    },
+    "/progress/{progressId}": {
+      "schema": "Progress",
+      "description": "Daily progress tracking"
+    },
+    "/memories/{memoryId}": {
+      "schema": "Memory",
+      "description": "User AI memory"
+    },
+    "/conversations/{conversationId}": {
+      "schema": "Conversation",
+      "description": "User chat history"
+    }
+  }
+}
