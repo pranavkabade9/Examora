@@ -62,19 +62,18 @@ export default function Layout({ children, activeTab, setActiveTab, user, isGues
         </nav>
 
         <div className="p-8 border-t border-slate-900">
-          <div className="flex items-center gap-4 p-4 glass-card bg-slate-900/50 border-slate-800">
-            <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center border border-slate-800 shadow-xl ring-2 ring-slate-800">
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt="Avatar" className="w-full h-full rounded-full" referrerPolicy="no-referrer" />
-              ) : (
-                <User className="w-5 h-5 text-slate-500" />
-              )}
+           <button 
+             onClick={() => setIsSettingsOpen(true)}
+             className="w-full flex items-center gap-4 p-4 glass-card bg-slate-900/50 border-slate-800 hover:bg-slate-800/80 transition-all group"
+           >
+            <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center border border-slate-800 group-hover:bg-blue-600 transition-colors">
+               <SettingsIcon className="w-5 h-5 text-slate-500 group-hover:text-white" />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-black text-white truncate">{isGuest ? 'Guest Access' : user?.displayName}</p>
-              <p className="text-[10px] text-slate-500 truncate uppercase mt-0.5 tracking-widest font-bold">Free Plan</p>
+            <div className="flex-1 text-left min-w-0">
+              <p className="text-xs font-black text-white truncate">Settings</p>
+              <p className="text-[10px] text-slate-500 truncate uppercase mt-0.5 tracking-widest font-bold">Preferences</p>
             </div>
-          </div>
+          </button>
         </div>
       </aside>
 
@@ -104,9 +103,6 @@ export default function Layout({ children, activeTab, setActiveTab, user, isGues
       </div>
 
       {/* Global Settings Components */}
-      <div className="hidden lg:block">
-        <SettingsButton onClick={() => setIsSettingsOpen(true)} />
-      </div>
       <SettingsPanel 
         isOpen={isSettingsOpen} 
         onClose={() => setIsSettingsOpen(false)} 

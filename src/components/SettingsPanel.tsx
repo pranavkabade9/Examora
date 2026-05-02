@@ -26,6 +26,7 @@ export default function SettingsPanel({ isOpen, onClose, user, isGuest, onResetR
   const [isExporting, setIsExporting] = useState(false);
 
   const handleLogout = async () => {
+    localStorage.removeItem('examora_session_active');
     await auth.signOut();
     onClose();
     window.location.reload();

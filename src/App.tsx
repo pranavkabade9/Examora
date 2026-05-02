@@ -25,6 +25,7 @@ export default function App() {
   const [isGuest, setIsGuest] = useState(false);
   const [loading, setLoading] = useState(true);
   const { loadSettings, settings } = useSettingsStore();
+
   const [activeTab, setActiveTab] = useState('dashboard');
   const [syllabus, setSyllabus] = useState<any>(null);
   const [plan, setPlan] = useState<any>(null);
@@ -116,10 +117,12 @@ export default function App() {
       }
     }
   };
-  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
+        const sessionActive = localStorage.getItem('examora_session_active') === 'true';
+
         if (user) {
           // Load settings first
           await loadSettings(user.uid);
@@ -131,6 +134,7 @@ export default function App() {
           }
           setUser(user);
           setIsGuest(false);
+          localStorage.setItem('examora_session_active', 'true');
           
           // Load memory
           const memorySnap = await getDoc(doc(db, 'memories', user.uid));
@@ -148,11 +152,11 @@ export default function App() {
             await setDoc(doc(db, 'memories', user.uid), initialMemory);
             setMemory(initialMemory);
           }
-        } else {
+        } else if (sessionActive) {
           // Load guest settings
           await loadSettings();
           
-          // Check if we have an active guest session
+          // Only automatically enter if they explicitly chose guest mode in this "session"
           const guestData = getGuestData();
           if (guestData) {
             setIsGuest(true);
@@ -160,8 +164,17 @@ export default function App() {
             setPlan(guestData.plan);
             setProgress(guestData.progress || []);
             setMemory({ weakTopics: [], completedTopics: [] });
+          } else {
+            // No data even if session active? Clear it.
+            localStorage.removeItem('examora_session_active');
+            setIsGuest(false);
           }
           setUser(null);
+        } else {
+          // No user, no guest session active -> Force Intro
+          await loadSettings();
+          setUser(null);
+          setIsGuest(false);
         }
       } catch (error) {
         console.error('Auth state change error:', error);
@@ -319,8 +332,18 @@ export default function App() {
   };
 
   const handleGuestLogin = () => {
+    localStorage.setItem('examora_session_active', 'true');
     setIsGuest(true);
-    saveGuestData({}); // Initialize empty guest session
+    const guestData = getGuestData();
+    if (!guestData) {
+      saveGuestData({}); // Initialize empty guest session if none exists
+    } else {
+      // Rehydrate existing guest session
+      setSyllabus(guestData.syllabus);
+      setPlan(guestData.plan);
+      setProgress(guestData.progress || []);
+      setMemory({ weakTopics: [], completedTopics: [] });
+    }
   };
 
   const handleReset = async () => {
