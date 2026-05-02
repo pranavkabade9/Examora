@@ -72,19 +72,19 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
         syllabusContent = parseResult.text;
       }
       
-      // 2. Parse syllabus locally
-      setLoadingStep('Analyzing syllabus structure...');
+      // 2. Smart Syllabus Organizer
+      setLoadingStep('Organizing your syllabus topics...');
       const structuredSyllabus = parseSyllabusLocally(syllabusContent);
 
-      // 3. Generate study plan locally
-      setLoadingStep('Creating your MASTER plan...');
+      // 3. Auto Study Planner
+      setLoadingStep('Building your study roadmap...');
       const studyPlan = generateStudyPlanLocally(structuredSyllabus, {
         examDate,
         hoursPerDay,
         difficulty,
       });
 
-      setLoadingStep('Finalizing...');
+      setLoadingStep('Finalizing your plan...');
       const syllabusData = {
         userId: isGuest ? 'guest' : auth.currentUser?.uid,
         title: structuredSyllabus.title || 'My Syllabus',

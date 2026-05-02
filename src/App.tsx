@@ -431,7 +431,7 @@ export default function App() {
           </div>
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold">Generating Your Master Plan...</h2>
-            <p className="text-white/40">AI is analyzing your syllabus and optimizing your schedule.</p>
+            <p className="text-white/40">Analyzing your syllabus and optimizing your schedule.</p>
           </div>
         </div>
       ) : (

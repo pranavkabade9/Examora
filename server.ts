@@ -7,13 +7,7 @@ import dotenv from "dotenv";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
-// Pointing directly to the lib file often avoids ESM/CJS default export confusion
-let pdfParse: any;
-try {
-  pdfParse = require("pdf-parse/lib/pdf-parse.js");
-} catch (e) {
-  pdfParse = require("pdf-parse");
-}
+const pdf = require("pdf-parse");
 
 dotenv.config();
 
@@ -41,18 +35,14 @@ async function startServer() {
 
       console.log("Parsing PDF file, size:", req.file.size);
       
-      // Robust pdf-parse extraction
-      let pdfFunction: any = pdfParse;
-      if (typeof pdfFunction !== 'function' && pdfParse && typeof pdfParse.default === 'function') {
-        pdfFunction = pdfParse.default;
+      // Robust PDF extraction
+      let pdfFunction = pdf;
+      if (typeof pdfFunction !== 'function' && pdf.default) {
+        pdfFunction = pdf.default;
       }
       
       if (typeof pdfFunction !== 'function') {
-        if (pdfParse && pdfParse.pdf && typeof pdfParse.pdf === 'function') {
-          pdfFunction = pdfParse.pdf;
-        } else {
-          throw new Error("PDF parsing engine not initialized correctly");
-        }
+        throw new Error("PDF parsing engine initialization failed. Found type: " + typeof pdfFunction);
       }
 
       const data = await pdfFunction(req.file.buffer);
@@ -60,8 +50,7 @@ async function startServer() {
       if (!data || !data.text) {
         throw new Error("Failed to extract text from PDF");
       }
-
-      // Clean extracted text (Robust pipeline)
+      
       let cleanedText = data.text
         .replace(/\s+/g, " ") // Remove extra spaces
         .replace(/[^a-zA-Z0-9.,\n\-\(\):; ]/g, "") // Remove random symbols but keep basic punctuation
@@ -75,7 +64,7 @@ async function startServer() {
 
       console.log("Extracted text (first 200 chars):", cleanedText.substring(0, 200));
 
-      res.json({
+      return res.json({
         success: true,
         text: cleanedText
       });
@@ -117,4 +106,7 @@ async function startServer() {
   });
 }
 
-startServer();
+startServer().catch((err) => {
+  console.error("FATAL: Failed to start server:", err);
+  process.exit(1);
+});
