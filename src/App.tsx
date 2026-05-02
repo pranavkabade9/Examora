@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db } from './lib/firebase';
+import { auth, db, handleFirestoreError, OperationType } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { collection, query, where, onSnapshot, orderBy, limit, addDoc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
 import Auth from './components/Auth';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
 import SyllabusUpload from './components/SyllabusUpload';
 import StudyPlan from './components/StudyPlan';
 import Analytics from './components/Analytics';
-import AICoachWorkspace from './components/AICoachWorkspace';
+import AssistantWorkspace from './components/AssistantWorkspace';
 import ResetModal from './components/ResetModal';
-import { generateStudyPlan, getCoachSuggestions } from './lib/gemini';
-import { getGuestData, saveGuestData, migrateGuestData, GuestData } from './lib/auth-utils';
-import { Loader2, Sparkles, Bot } from 'lucide-react';
+import { generateStudyPlanLocally, getSmartSuggestions } from './lib/studyLogic';
+import { getGuestData, saveGuestData, migrateGuestData } from './lib/auth-utils';
+import { Loader2, Info } from 'lucide-react';
 import { motion } from 'motion/react';
 import { setDoc, doc, getDoc, deleteDoc, getDocs } from 'firebase/firestore';
 import { Suggestion } from './components/SuggestionCard';
@@ -55,6 +55,8 @@ export default function App() {
         dayIndex,
         taskIndex,
         topic: task.topic,
+        date: updatedPlan.days[dayIndex].date,
+        planId: plan.id,
         completedAt: new Date().toISOString()
       };
       updatedProgress.push(newProgressRecord);
@@ -66,24 +68,38 @@ export default function App() {
         lastUpdated: new Date().toISOString()
       };
       setMemory(updatedMemory);
-      if (user) await setDoc(doc(db, 'memories', user.uid), updatedMemory);
+      if (user) {
+        try {
+          await setDoc(doc(db, 'memories', user.uid), updatedMemory);
+        } catch (error) {
+          handleFirestoreError(error, OperationType.WRITE, `memories/${user.uid}`);
+        }
+      }
 
       // Persist Progress to DB
       if (user) {
-        await addDoc(collection(db, 'progress'), {
-          userId: user.uid,
-          ...newProgressRecord
-        });
+        try {
+          await addDoc(collection(db, 'progress'), {
+            userId: user.uid,
+            ...newProgressRecord
+          });
+        } catch (error) {
+          handleFirestoreError(error, OperationType.CREATE, 'progress');
+        }
       }
     } else {
       updatedProgress = updatedProgress.filter(p => p.taskId !== taskId);
       
       // Remove Progress from DB
       if (user) {
-        const q = query(collection(db, 'progress'), where('userId', '==', user.uid), where('taskId', '==', taskId));
-        const snap = await getDocs(q);
-        const deletePromises = snap.docs.map(d => deleteDoc(doc(db, 'progress', d.id)));
-        await Promise.all(deletePromises);
+        try {
+          const q = query(collection(db, 'progress'), where('userId', '==', user.uid), where('taskId', '==', taskId));
+          const snap = await getDocs(q);
+          const deletePromises = snap.docs.map(d => deleteDoc(doc(db, 'progress', d.id)));
+          await Promise.all(deletePromises);
+        } catch (error) {
+          handleFirestoreError(error, OperationType.DELETE, 'progress');
+        }
       }
     }
 
@@ -93,79 +109,85 @@ export default function App() {
     if (isGuest) {
       saveGuestData({ plan: updatedPlan, progress: updatedProgress });
     } else if (user) {
-      await setDoc(doc(db, 'studyPlans', plan.id), updatedPlan);
+      try {
+        await setDoc(doc(db, 'studyPlans', plan.id), updatedPlan);
+      } catch (error) {
+        handleFirestoreError(error, OperationType.WRITE, `studyPlans/${plan.id}`);
+      }
     }
   };
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Load settings first
-        await loadSettings(user.uid);
-        
-        // Check for guest data to migrate
-        const guestData = getGuestData();
-        if (guestData) {
-          await migrateGuestData(user.uid);
-        }
-        setUser(user);
-        setIsGuest(false);
-        
-        // Load memory
-        const memorySnap = await getDoc(doc(db, 'memories', user.uid));
-        if (memorySnap.exists()) {
-          setMemory(memorySnap.data());
+      try {
+        if (user) {
+          // Load settings first
+          await loadSettings(user.uid);
+          
+          // Check for guest data to migrate
+          const guestData = getGuestData();
+          if (guestData) {
+            await migrateGuestData(user.uid);
+          }
+          setUser(user);
+          setIsGuest(false);
+          
+          // Load memory
+          const memorySnap = await getDoc(doc(db, 'memories', user.uid));
+          if (memorySnap.exists()) {
+            setMemory(memorySnap.data());
+          } else {
+            const initialMemory = {
+              userId: user.uid,
+              weakTopics: [],
+              completedTopics: [],
+              performanceHistory: [],
+              pastQuestions: [],
+              lastUpdated: new Date().toISOString()
+            };
+            await setDoc(doc(db, 'memories', user.uid), initialMemory);
+            setMemory(initialMemory);
+          }
         } else {
-          const initialMemory = {
-            userId: user.uid,
-            weakTopics: [],
-            completedTopics: [],
-            performanceHistory: [],
-            pastQuestions: [],
-            lastUpdated: new Date().toISOString()
-          };
-          await setDoc(doc(db, 'memories', user.uid), initialMemory);
-          setMemory(initialMemory);
+          // Load guest settings
+          await loadSettings();
+          
+          // Check if we have an active guest session
+          const guestData = getGuestData();
+          if (guestData) {
+            setIsGuest(true);
+            setSyllabus(guestData.syllabus);
+            setPlan(guestData.plan);
+            setProgress(guestData.progress || []);
+            setMemory({ weakTopics: [], completedTopics: [] });
+          }
+          setUser(null);
         }
-      } else {
-        // Load guest settings
-        await loadSettings();
-        
-        // Check if we have an active guest session
-        const guestData = getGuestData();
-        if (guestData) {
-          setIsGuest(true);
-          setSyllabus(guestData.syllabus);
-          setPlan(guestData.plan);
-          setProgress(guestData.progress || []);
-          setMemory({ weakTopics: [], completedTopics: [] });
-        }
-        setUser(null);
+      } catch (error) {
+        console.error('Auth state change error:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
     return unsubscribe;
   }, []);
 
-  // Suggestion Engine
+  // Smart Suggestion Engine
   useEffect(() => {
     if (loading || (!user && !isGuest)) return;
 
-    const fetchSuggestions = async () => {
-      const coachSuggestions = await getCoachSuggestions({
-        syllabus,
-        plan,
+    const fetchSuggestions = () => {
+      const smartSuggestions = getSmartSuggestions({
         memory,
-        progress,
-        settings
+        progress
       });
-      setSuggestions(coachSuggestions);
+      setSuggestions(smartSuggestions);
     };
 
     fetchSuggestions();
-    const interval = setInterval(fetchSuggestions, 300000); // Every 5 mins
+    const interval = setInterval(fetchSuggestions, 60000); // Every min
     return () => clearInterval(interval);
-  }, [loading, user, isGuest, syllabus, plan, memory, progress, settings]);
+  }, [loading, user, isGuest, memory, progress]);
 
   const handleUpdateMemory = async (newWeakTopics: string[]) => {
     if (!user && !isGuest) return;
@@ -243,25 +265,35 @@ export default function App() {
   const handleGeneratePlan = async (syllabusId: string, syllabusData: any) => {
     setGeneratingPlan(true);
     try {
-      const generatedPlan = await generateStudyPlan(syllabusData.content, {
+      const generatedPlan = generateStudyPlanLocally(syllabusData.content, {
         examDate: syllabusData.examDate,
         hoursPerDay: syllabusData.hoursPerDay,
         difficulty: syllabusData.difficulty
-      }, settings);
+      });
       
       const planData = {
         userId: user?.uid || 'guest',
         syllabusId,
         days: generatedPlan,
+        examDate: syllabusData.examDate,
+        hoursPerDay: syllabusData.hoursPerDay,
+        difficulty: syllabusData.difficulty,
         createdAt: new Date().toISOString()
       };
 
       if (isGuest) {
         setPlan(planData);
         saveGuestData({ plan: planData });
-      } else {
-        // In a real app, we'd save this to Firestore
-        setPlan(planData);
+      } else if (user) {
+        try {
+          const docRef = await addDoc(collection(db, 'studyPlans'), {
+            ...planData,
+            createdAt: serverTimestamp()
+          });
+          setPlan({ id: docRef.id, ...planData });
+        } catch (error) {
+          handleFirestoreError(error, OperationType.CREATE, 'studyPlans');
+        }
       }
       setActiveTab('plan');
     } catch (error) {
@@ -372,7 +404,7 @@ export default function App() {
           className="mb-6 p-4 glass-card bg-blue-500/10 border-blue-500/20 flex items-center justify-between"
         >
           <div className="flex items-center gap-3">
-            <Sparkles className="w-5 h-5 text-blue-400" />
+            <Info className="w-5 h-5 text-blue-400" />
             <p className="text-sm text-blue-100">
               You're in <strong>Guest Mode</strong>. Sign in to save your progress permanently across devices.
             </p>
@@ -424,7 +456,7 @@ export default function App() {
             <Analytics plan={plan} progress={progress} />
           )}
           {activeTab === 'chat' && (
-            <AICoachWorkspace 
+            <AssistantWorkspace 
               syllabus={syllabus}
               plan={plan}
               memory={memory}

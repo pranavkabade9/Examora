@@ -59,22 +59,28 @@ service cloud.firestore {
     function isValidSyllabus(data) {
       return data.keys().hasAll(['userId', 'title', 'content']) &&
              data.userId == request.auth.uid &&
-             data.title is string && data.title.size() < 200 &&
+             data.title is string && data.title.size() < 1000 &&
              data.content is map;
     }
 
     function isValidStudyPlan(data) {
-      return data.keys().hasAll(['userId', 'syllabusId', 'examDate', 'hoursPerDay', 'days']) &&
+      return data.keys().hasAll(['userId', 'syllabusId', 'days']) &&
              data.userId == request.auth.uid &&
-             data.hoursPerDay is number && data.hoursPerDay > 0 &&
+             (!('hoursPerDay' in data) || data.hoursPerDay is number) &&
              data.days is list;
     }
 
     function isValidProgress(data) {
-      return data.keys().hasAll(['userId', 'planId', 'date']) &&
+      return data.keys().hasAll(['userId', 'planId']) &&
              data.userId == request.auth.uid &&
-             data.planId is string &&
-             data.date is string;
+             data.planId is string;
+    }
+
+    function isValidSettings(data) {
+      return data.keys().hasAll(['theme', 'aiProfile', 'notifications']) &&
+             data.theme in ['light', 'dark', 'system'] &&
+             data.aiProfile is map &&
+             data.notifications is map;
     }
 
     // ===============================================================
@@ -85,6 +91,12 @@ service cloud.firestore {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId) && isValidUser(request.resource.data);
       allow update: if isOwner(userId) && isValidUser(request.resource.data);
+    }
+
+    match /settings/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidSettings(request.resource.data);
+      allow update: if isOwner(userId) && isValidSettings(request.resource.data);
     }
 
     match /syllabi/{syllabusId} {
@@ -108,10 +120,10 @@ service cloud.firestore {
       allow delete: if isDocOwner();
     }
 
-    match /memories/{memoryId} {
-      allow read: if isDocOwner() || isAdmin();
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update: if isDocOwner();
+    match /memories/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
     }
 
     match /conversations/{conversationId} {

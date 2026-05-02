@@ -1,13 +1,12 @@
 import { create } from 'zustand';
 import { UserSettings, DEFAULT_SETTINGS, Theme } from '../types';
-import { auth, db } from '../lib/firebase';
+import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface SettingsState {
   settings: UserSettings;
   isLoading: boolean;
   setSettings: (settings: Partial<UserSettings>) => void;
-  updateAIProfile: (profile: Partial<UserSettings['aiProfile']>) => void;
   updateNotifications: (notifications: Partial<UserSettings['notifications']>) => void;
   setTheme: (theme: Theme) => void;
   loadSettings: (userId?: string) => Promise<void>;
@@ -32,14 +31,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     
     // Sync to backend if logged in
     get().syncToBackend();
-  },
-
-  updateAIProfile: (profile) => {
-    const updatedSettings = {
-      ...get().settings,
-      aiProfile: { ...get().settings.aiProfile, ...profile }
-    };
-    get().setSettings(updatedSettings);
   },
 
   updateNotifications: (notifications) => {
@@ -68,12 +59,16 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       // 2. Try Firebase if userId provided
       if (userId) {
         const docRef = doc(db, 'settings', userId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          loadedSettings = { ...loadedSettings, ...docSnap.data() };
-        } else {
-          // If no settings in Firebase, save local ones there
-          await setDoc(docRef, loadedSettings);
+        try {
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            loadedSettings = { ...loadedSettings, ...docSnap.data() };
+          } else {
+            // If no settings in Firebase, save local ones there
+            await setDoc(docRef, loadedSettings);
+          }
+        } catch (error) {
+          handleFirestoreError(error, OperationType.GET, `settings/${userId}`);
         }
       }
 
@@ -94,7 +89,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       await setDoc(docRef, get().settings);
       console.log('Settings synced to backend');
     } catch (error) {
-      console.error('Failed to sync settings:', error);
+      handleFirestoreError(error, OperationType.WRITE, `settings/${userId}`);
     }
   }
 }));

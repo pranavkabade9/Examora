@@ -3,8 +3,7 @@ import { motion } from 'motion/react';
 import { 
   Calendar, CheckCircle2, Clock, 
   TrendingUp, Zap, ChevronRight,
-  BookOpen, Target, Sparkles, Bot,
-  AlertCircle, RefreshCcw
+  BookOpen, Target, Info, RefreshCcw
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import SuggestionCard, { Suggestion } from './SuggestionCard';
@@ -60,8 +59,8 @@ export default function Dashboard({ plan, progress, suggestions, onAction, onRes
             onClick={() => onAction('chat')}
             className="flex-1 md:flex-none px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 text-sm"
           >
-            <Sparkles className="w-4 h-4" />
-            AI Coach
+            <Info className="w-4 h-4" />
+            Study Assistant
           </button>
         </div>
       </div>
@@ -173,11 +172,10 @@ export default function Dashboard({ plan, progress, suggestions, onAction, onRes
           </div>
         </div>
 
-        {/* AI Suggestions Sidebar */}
         <div className="space-y-8">
           <h2 className="text-2xl md:text-3xl font-black flex items-center gap-3 font-display px-2">
-            <Sparkles className="w-8 h-8 text-yellow-500" />
-            Examora Insights
+            <Info className="w-8 h-8 text-blue-500" />
+            Assistant Panel
           </h2>
           <div className="grid grid-cols-1 gap-4 md:gap-6">
             {suggestions && suggestions.length > 0 ? (
@@ -186,10 +184,10 @@ export default function Dashboard({ plan, progress, suggestions, onAction, onRes
               ))
             ) : (
               <div className="glass-card p-10 text-center space-y-4 opacity-50">
-                <div className="w-12 h-12 bg-slate-500/5 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto animate-pulse">
+                <div className="w-12 h-12 bg-slate-500/5 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto">
                   <Target className="w-6 h-6 text-slate-300 dark:text-white/20" />
                 </div>
-                <p className="text-xs text-slate-400 dark:text-white/40 uppercase tracking-widest font-bold">Analyzing your data...</p>
+                <p className="text-xs text-slate-400 dark:text-white/40 uppercase tracking-widest font-bold">Waiting for input...</p>
               </div>
             )}
           </div>
@@ -197,18 +195,18 @@ export default function Dashboard({ plan, progress, suggestions, onAction, onRes
           <div className="glass-card p-6 md:p-8 bg-blue-600/5 dark:bg-blue-600/10 border-blue-500/20 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <Bot className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="font-black text-sm uppercase tracking-widest">Examora AI Coach</h3>
+              <h3 className="font-black text-sm uppercase tracking-widest">About Examora</h3>
             </div>
-            <p className="text-sm md:text-base text-slate-600 dark:text-white/60 italic leading-relaxed font-medium">
-              "You're most productive between 8 AM and 10 AM. Try tackling your hardest topics then for maximum retention! 🧠"
+            <p className="text-sm md:text-base text-slate-600 dark:text-white/60 leading-relaxed font-medium">
+              Examora uses a localized rule-based engine to organize your studies. It's fast, private, and works offline.
             </p>
             <button 
               onClick={() => onAction('chat')}
               className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-black rounded-2xl transition-all shadow-lg shadow-blue-500/20"
             >
-              Talk to Mentor
+              Explore Assistant
             </button>
           </div>
         </div>

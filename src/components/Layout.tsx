@@ -24,58 +24,55 @@ export default function Layout({ children, activeTab, setActiveTab, user, isGues
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const navItems = [
-    { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { id: 'syllabus', icon: BookOpen, label: 'Syllabus' },
-    { id: 'plan', icon: Calendar, label: 'Plan' },
-    { id: 'analytics', icon: BarChart2, label: 'Stats' },
-    { id: 'chat', icon: MessageSquare, label: 'AI Coach' },
+    { id: 'dashboard', icon: LayoutDashboard, label: 'Overview' },
+    { id: 'syllabus', icon: BookOpen, label: 'Curriculum' },
+    { id: 'plan', icon: Calendar, label: 'Strategy' },
+    { id: 'analytics', icon: BarChart2, label: 'Performance' },
+    { id: 'chat', icon: MessageSquare, label: 'Assistant' },
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white dark:bg-[#050505] text-slate-900 dark:text-white transition-colors duration-300">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white transition-colors duration-300">
       {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex w-72 glass-card m-4 mr-0 flex-col border-slate-200 dark:border-white/10">
-        <div className="p-8">
-          <Logo />
-          <p className="text-[10px] text-slate-400 dark:text-white/30 font-bold tracking-[0.2em] uppercase mt-1 ml-11">AI Study Coach</p>
+      <aside className="hidden lg:flex w-72 bg-[#020617] border-r border-slate-900 flex-col">
+        <div className="p-10 flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+            <LayoutDashboard className="w-6 h-6" />
+          </div>
+          <span className="text-2xl font-black tracking-tighter text-white font-display">Examora</span>
         </div>
 
-        <nav className="flex-1 px-4 space-y-2">
+        <nav className="flex-1 px-6 space-y-2">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-6 px-4">Workspace</p>
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={cn(
-                "w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 group relative overflow-hidden",
+                "w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 font-bold text-sm",
                 activeTab === item.id 
-                  ? "bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/20" 
-                  : "text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-500/5 dark:hover:bg-white/5 border border-transparent"
+                  ? "bg-blue-600/10 text-blue-500 border border-blue-500/20 shadow-[0_0_20px_rgba(30,64,175,0.1)]" 
+                  : "text-slate-500 hover:text-white hover:bg-slate-900 border border-transparent"
               )}
             >
-              {activeTab === item.id && (
-                <motion.div 
-                  layoutId="activeNav"
-                  className="absolute left-0 w-1 h-6 bg-blue-500 rounded-r-full"
-                />
-              )}
-              <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", activeTab === item.id ? "text-blue-500 dark:text-blue-400" : "text-slate-400 dark:text-white/40")} />
-              <span className="font-bold tracking-tight">{item.label}</span>
+              <item.icon className={cn("w-5 h-5", activeTab === item.id ? "text-blue-500" : "text-slate-500")} />
+              {item.label}
             </button>
           ))}
         </nav>
 
-        <div className="p-6 mt-auto border-t border-slate-200 dark:border-white/5 bg-slate-500/5 dark:bg-white/5">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-slate-200 dark:bg-white/10 rounded-full flex items-center justify-center border border-slate-300 dark:border-white/10">
+        <div className="p-8 border-t border-slate-900">
+          <div className="flex items-center gap-4 p-4 glass-card bg-slate-900/50 border-slate-800">
+            <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center border border-slate-800 shadow-xl ring-2 ring-slate-800">
               {user?.photoURL ? (
                 <img src={user.photoURL} alt="Avatar" className="w-full h-full rounded-full" referrerPolicy="no-referrer" />
               ) : (
-                <User className="w-5 h-5 text-slate-400 dark:text-white/40" />
+                <User className="w-5 h-5 text-slate-500" />
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold truncate">{isGuest ? 'Guest Student' : user?.displayName}</p>
-              <p className="text-[10px] text-slate-400 dark:text-white/30 truncate uppercase tracking-widest">{isGuest ? 'Local Session' : 'Premium Member'}</p>
+              <p className="text-xs font-black text-white truncate">{isGuest ? 'Guest Access' : user?.displayName}</p>
+              <p className="text-[10px] text-slate-500 truncate uppercase mt-0.5 tracking-widest font-bold">Free Plan</p>
             </div>
           </div>
         </div>

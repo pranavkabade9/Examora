@@ -87,70 +87,59 @@ export default function StudyPlan({ plan, onToggleTask }: StudyPlanProps) {
             </div>
           </div>
 
-          <div className="space-y-4 md:space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {currentDay.tasks.map((task: any, i: number) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
+                onClick={() => onToggleTask(selectedDay, i)}
                 className={cn(
-                  "glass-card p-5 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 group transition-all border",
+                  "glass-card p-6 flex flex-col justify-between gap-6 group transition-all border cursor-pointer select-none",
                   task.completed 
                     ? "opacity-60 bg-green-500/5 border-green-500/20" 
-                    : "hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/5"
+                    : "hover:border-blue-500/40 hover:bg-white dark:hover:bg-[#1e293b]/50"
                 )}
               >
-                <div className="flex items-center gap-5 md:gap-8 w-full sm:w-auto">
-                  <div className={cn(
-                    "w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300",
-                    task.completed 
-                      ? "bg-green-500/20 text-green-600 dark:text-green-400" 
-                      : task.type === 'revision' 
-                        ? "bg-purple-500/20 text-purple-600 dark:text-purple-400" 
-                        : "bg-blue-500/20 text-blue-600 dark:text-blue-400"
-                  )}>
-                    {task.completed ? <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8" /> : task.type === 'revision' ? <BookOpen className="w-6 h-6 md:w-8 md:h-8" /> : <Clock className="w-6 h-6 md:w-8 md:h-8" />}
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className={cn(
+                      "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300",
+                      task.completed 
+                        ? "bg-green-500/10 text-green-600 outline outline-green-500/20" 
+                        : "bg-slate-500/5 text-slate-400 group-hover:bg-blue-600/10 group-hover:text-blue-500"
+                    )}>
+                      {task.completed ? <CheckCircle2 className="w-6 h-6" /> : <BookOpen className="w-6 h-6" />}
+                    </div>
+                    <span className={cn(
+                      "text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-black font-display border",
+                      task.priority === 'high' 
+                        ? "bg-red-500/10 text-red-500 border-red-500/20" 
+                        : "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                    )}>
+                      {task.priority}
+                    </span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-3 mb-2">
-                      <h3 className={cn(
-                        "text-lg md:text-2xl font-black line-clamp-1 transition-all font-display",
-                        task.completed && "line-through text-slate-400 dark:text-white/30"
-                      )}>
-                        {task.topic}
-                      </h3>
-                      <span className={cn(
-                        "text-[10px] uppercase tracking-widest px-3 py-1 rounded-lg font-black",
-                        task.priority === 'high' ? "bg-red-500/10 text-red-600 dark:text-red-400" : "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                      )}>
-                        {task.priority}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs md:text-base text-slate-500 dark:text-white/40 font-bold">
-                      <span className="flex items-center gap-2"><Clock className="w-4 h-4" /> {task.duration}</span>
-                      <span className="flex items-center gap-2 capitalize"><Circle className="w-2 h-2 fill-current" /> {task.type}</span>
-                    </div>
+                  <h3 className={cn(
+                    "text-xl font-black leading-tight mb-2 font-display",
+                    task.completed && "line-through text-slate-400 dark:text-white/30"
+                  )}>
+                    {task.topic}
+                  </h3>
+                  <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-bold">
+                    <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {task.duration}</span>
+                    <span className="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full" />
+                    <span className="capitalize">{task.type} session</span>
                   </div>
                 </div>
-                <button 
-                  onClick={() => onToggleTask(selectedDay, i)}
-                  className={cn(
-                    "w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 md:py-5 rounded-2xl text-sm md:text-base font-black transition-all active:scale-95",
-                    task.completed 
-                      ? "bg-green-500/10 text-green-600 dark:text-green-400 hover:bg-green-500/20" 
-                      : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white dark:hover:text-white shadow-lg"
-                  )}
-                >
-                  {task.completed ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5" />
-                      Completed
-                    </>
-                  ) : (
-                    "Mark Done"
-                  )}
-                </button>
+                
+                <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Status</span>
+                  <span className={cn("text-xs font-black", task.completed ? "text-green-500" : "text-blue-500")}>
+                    {task.completed ? 'COMPLETED' : 'PENDING'}
+                  </span>
+                </div>
               </motion.div>
             ))}
           </div>

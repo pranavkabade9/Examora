@@ -1,4 +1,4 @@
-import { db } from './firebase';
+import { db, handleFirestoreError, OperationType } from './firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const GUEST_SESSION_KEY = 'exam_killer_guest_session';
@@ -27,41 +27,80 @@ export const migrateGuestData = async (userId: string) => {
   const guestData = getGuestData();
   if (!guestData) return;
 
+  console.log('Starting migration for user:', userId);
+
   try {
+    let syllabusId = '';
+    
     // Migrate Syllabus
     if (guestData.syllabus) {
-      await addDoc(collection(db, 'syllabi'), {
-        ...guestData.syllabus,
-        userId,
-        createdAt: serverTimestamp(),
-        migratedFromGuest: true
-      });
+      console.log('Migrating syllabus...');
+      try {
+        const syllabusDoc = await addDoc(collection(db, 'syllabi'), {
+          userId,
+          title: guestData.syllabus.title || 'My Syllabus',
+          content: guestData.syllabus.content,
+          examDate: guestData.syllabus.examDate || '',
+          hoursPerDay: guestData.syllabus.hoursPerDay || 4,
+          difficulty: guestData.syllabus.difficulty || 'medium',
+          createdAt: serverTimestamp(),
+          migratedFromGuest: true
+        });
+        syllabusId = syllabusDoc.id;
+        console.log('Syllabus migrated:', syllabusId);
+      } catch (e) {
+        console.error('Syllabus migration failed:', e);
+        throw e;
+      }
     }
 
     // Migrate Study Plan
-    if (guestData.plan) {
-      await addDoc(collection(db, 'studyPlans'), {
-        ...guestData.plan,
-        userId,
-        createdAt: serverTimestamp(),
-        migratedFromGuest: true
-      });
+    let planId = '';
+    if (guestData.plan && (syllabusId || guestData.plan.syllabusId)) {
+      console.log('Migrating study plan...');
+      try {
+        const planDoc = await addDoc(collection(db, 'studyPlans'), {
+          userId,
+          syllabusId: syllabusId || guestData.plan.syllabusId,
+          days: guestData.plan.days || [],
+          examDate: guestData.syllabus?.examDate || guestData.plan.examDate || '',
+          hoursPerDay: guestData.syllabus?.hoursPerDay || guestData.plan.hoursPerDay || 4,
+          difficulty: guestData.syllabus?.difficulty || guestData.plan.difficulty || 'medium',
+          createdAt: serverTimestamp(),
+          migratedFromGuest: true
+        });
+        planId = planDoc.id;
+        console.log('Study plan migrated:', planId);
+      } catch (e) {
+        console.error('Study plan migration failed:', e);
+        throw e;
+      }
     }
 
     // Migrate Progress
-    if (guestData.progress && guestData.progress.length > 0) {
-      for (const p of guestData.progress) {
-        await addDoc(collection(db, 'progress'), {
-          ...p,
-          userId,
-          migratedFromGuest: true
-        });
+    if (guestData.progress && guestData.progress.length > 0 && planId) {
+      console.log(`Migrating ${guestData.progress.length} progress records...`);
+      try {
+        for (const p of guestData.progress) {
+          await addDoc(collection(db, 'progress'), {
+            ...p,
+            userId,
+            planId,
+            date: p.date || new Date().toISOString().split('T')[0],
+            migratedFromGuest: true
+          });
+        }
+        console.log('Progress migrated');
+      } catch (e) {
+        console.error('Progress migration failed:', e);
+        throw e;
       }
     }
 
     clearGuestData();
-    console.log('Migration successful');
+    console.log('Migration completed successfully');
   } catch (error) {
-    console.error('Migration failed:', error);
+    console.error('Migration failed overall:', error);
+    handleFirestoreError(error, OperationType.WRITE, 'migration');
   }
 };

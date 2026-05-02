@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   X, User, Bell, Shield, Moon, LogOut, ChevronRight, 
-  Sparkles, ChevronLeft, Download, Trash2, Check, Sun, Monitor, RefreshCcw
+  Info, ChevronLeft, Download, Trash2, Check, Sun, Monitor, RefreshCcw
 } from 'lucide-react';
 import { auth, db } from '../lib/firebase';
 import { cn } from '../lib/utils';
 import { useSettingsStore } from '../store/useSettingsStore';
-import { Theme, AIProfile } from '../types';
+import { Theme } from '../types';
 import { doc, deleteDoc, collection, getDocs, query, where } from 'firebase/firestore';
 
 interface SettingsPanelProps {
@@ -19,11 +19,11 @@ interface SettingsPanelProps {
   hasSyllabus?: boolean;
 }
 
-type SettingsView = 'main' | 'profile' | 'notifications' | 'appearance' | 'privacy' | 'ai-profile';
+type SettingsView = 'main' | 'profile' | 'notifications' | 'appearance' | 'privacy';
 
 export default function SettingsPanel({ isOpen, onClose, user, isGuest, onResetRequest, hasSyllabus }: SettingsPanelProps) {
   const [view, setView] = useState<SettingsView>('main');
-  const { settings, updateAIProfile, updateNotifications, setTheme, setSettings } = useSettingsStore();
+  const { settings, updateNotifications, setTheme, setSettings } = useSettingsStore();
   const [isExporting, setIsExporting] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
 
@@ -100,7 +100,7 @@ export default function SettingsPanel({ isOpen, onClose, user, isGuest, onResetR
         <div className="p-5 bg-blue-500/10 border border-blue-500/20 rounded-2xl space-y-4">
           <p className="text-sm font-black text-blue-600 dark:text-blue-100 uppercase tracking-widest">Guest Mode Active</p>
           <p className="text-xs text-slate-500 dark:text-white/40 leading-relaxed font-medium">
-            Your data is stored locally. Sign in with Google to enable cloud sync and advanced AI features.
+            Your data is stored locally. Sign in with Google to enable cloud sync and pro study tools.
           </p>
           <button 
             onClick={() => window.location.reload()}
@@ -119,13 +119,6 @@ export default function SettingsPanel({ isOpen, onClose, user, isGuest, onResetR
             label="Profile Settings" 
             description={isGuest ? 'Guest User' : user?.email}
             onClick={() => setView('profile')}
-          />
-          <SettingsItem 
-            icon={Sparkles} 
-            label="AI Study Profile" 
-            description="Customize AI behavior"
-            onClick={() => setView('ai-profile')}
-            highlight
           />
           <SettingsItem 
             icon={Bell} 
@@ -187,89 +180,6 @@ export default function SettingsPanel({ isOpen, onClose, user, isGuest, onResetR
     </div>
   );
 
-  const renderAIProfile = () => (
-    <div className="space-y-8 pb-10">
-      <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl">
-        <p className="text-xs text-blue-600/70 dark:text-blue-400/60 font-medium leading-relaxed">
-          This profile directly influences how the AI Coach explains concepts, generates plans, and interacts with you.
-        </p>
-      </div>
-      
-      <div className="space-y-6">
-        <SelectField 
-          label="Education Level"
-          value={settings.aiProfile.educationLevel}
-          options={['School', 'Diploma', 'Engineering', 'Competitive Exams', 'Other']}
-          onChange={(val) => updateAIProfile({ educationLevel: val })}
-        />
-        <InputField 
-          label="Branch / Major"
-          value={settings.aiProfile.branch}
-          placeholder="e.g. Mechanical Engineering"
-          onChange={(val) => updateAIProfile({ branch: val })}
-        />
-        <InputField 
-          label="Year / Semester"
-          value={settings.aiProfile.yearSemester}
-          placeholder="e.g. 3rd Year / 6th Sem"
-          onChange={(val) => updateAIProfile({ yearSemester: val })}
-        />
-        
-        <div className="h-px bg-slate-200 dark:bg-white/10 my-6" />
-
-        <SelectField 
-          label="Study Goal"
-          value={settings.aiProfile.studyGoal}
-          options={[
-            { value: 'pass', label: 'Just Pass' },
-            { value: 'rank', label: 'Top Rank' },
-            { value: 'deep-understanding', label: 'Deep Understanding' }
-          ]}
-          onChange={(val) => updateAIProfile({ studyGoal: val as any })}
-        />
-        <SelectField 
-          label="Explanation Style"
-          value={settings.aiProfile.explanationStyle}
-          options={[
-            { value: 'simple', label: 'Simple (Layman)' },
-            { value: 'detailed', label: 'Detailed (Academic)' },
-            { value: 'exam-focused', label: 'Exam Focused (Short)' }
-          ]}
-          onChange={(val) => updateAIProfile({ explanationStyle: val as any })}
-        />
-        <SelectField 
-          label="Language Preference"
-          value={settings.aiProfile.languageStyle}
-          options={[
-            { value: 'english', label: 'Pure English' },
-            { value: 'hinglish', label: 'Hinglish (Mix)' }
-          ]}
-          onChange={(val) => updateAIProfile({ languageStyle: val as any })}
-        />
-        <SelectField 
-          label="Learning Style"
-          value={settings.aiProfile.learningStyle}
-          options={[
-            { value: 'conceptual', label: 'Conceptual' },
-            { value: 'problem-solving', label: 'Problem Solving' },
-            { value: 'visual', label: 'Visual / Analogies' }
-          ]}
-          onChange={(val) => updateAIProfile({ learningStyle: val as any })}
-        />
-        <SelectField 
-          label="Difficulty Level"
-          value={settings.aiProfile.difficultyPreference}
-          options={[
-            { value: 'easy', label: 'Beginner' },
-            { value: 'medium', label: 'Intermediate' },
-            { value: 'hard', label: 'Advanced' }
-          ]}
-          onChange={(val) => updateAIProfile({ difficultyPreference: val as any })}
-        />
-      </div>
-    </div>
-  );
-
   const renderNotifications = () => (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -286,7 +196,7 @@ export default function SettingsPanel({ isOpen, onClose, user, isGuest, onResetR
           onToggle={() => updateNotifications({ dailyGoalAlerts: !settings.notifications.dailyGoalAlerts })}
         />
         <ToggleItem 
-          label="AI Suggestions" 
+          label="Smart Suggestions" 
           description="Receive personalized study tips"
           isActive={settings.notifications.aiSuggestions}
           onToggle={() => updateNotifications({ aiSuggestions: !settings.notifications.aiSuggestions })}
@@ -430,7 +340,7 @@ export default function SettingsPanel({ isOpen, onClose, user, isGuest, onResetR
                   </button>
                 )}
                 <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-blue-400" />
+                  <Info className="w-6 h-6 text-blue-400" />
                 </div>
                 <h2 className="text-xl font-bold">{getViewTitle()}</h2>
               </div>
@@ -454,7 +364,6 @@ export default function SettingsPanel({ isOpen, onClose, user, isGuest, onResetR
                 >
                   {view === 'main' && renderMain()}
                   {view === 'profile' && renderProfile()}
-                  {view === 'ai-profile' && renderAIProfile()}
                   {view === 'notifications' && renderNotifications()}
                   {view === 'appearance' && renderAppearance()}
                   {view === 'privacy' && renderPrivacy()}

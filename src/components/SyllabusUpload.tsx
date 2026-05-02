@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, Calendar as CalendarIcon, Clock, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'motion/react';
-import { parseSyllabus, generateStudyPlan } from '../lib/gemini';
-import { db, auth } from '../lib/firebase';
+import { parseSyllabusLocally, generateStudyPlanLocally } from '../lib/studyLogic';
+import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 interface SyllabusUploadProps {
@@ -72,19 +72,19 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
         syllabusContent = parseResult.text;
       }
       
-      // 2. Parse syllabus with Gemini (Frontend)
+      // 2. Parse syllabus locally
       setLoadingStep('Analyzing syllabus structure...');
-      const structuredSyllabus = await parseSyllabus(syllabusContent, settings);
+      const structuredSyllabus = parseSyllabusLocally(syllabusContent);
 
-      // 3. Generate study plan with Gemini (Frontend)
-      setLoadingStep('Creating your adaptive study plan...');
-      const studyPlan = await generateStudyPlan(structuredSyllabus, {
+      // 3. Generate study plan locally
+      setLoadingStep('Creating your MASTER plan...');
+      const studyPlan = generateStudyPlanLocally(structuredSyllabus, {
         examDate,
         hoursPerDay,
         difficulty,
-      }, settings);
+      });
 
-      setLoadingStep('Saving your plan...');
+      setLoadingStep('Finalizing...');
       const syllabusData = {
         userId: isGuest ? 'guest' : auth.currentUser?.uid,
         title: structuredSyllabus.title || 'My Syllabus',
@@ -108,6 +108,9 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
           userId: auth.currentUser?.uid,
           syllabusId: docRef.id,
           days: studyPlan,
+          examDate,
+          hoursPerDay,
+          difficulty,
           createdAt: new Date().toISOString()
         };
 
@@ -117,11 +120,14 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
         });
 
         onComplete(docRef.id, { ...syllabusData, plan: planData });
-      }
-    } catch (err: any) {
-      console.error('Processing failed:', err);
-      setError(err.message || "Something went wrong. Please try again.");
-    } finally {
+    }
+  } catch (err: any) {
+    if (err.message?.includes('permission')) {
+      handleFirestoreError(err, OperationType.WRITE, 'syllabi/studyPlans');
+    }
+    console.error('Processing failed:', err);
+    setError(err.message || "Something went wrong. Please try again.");
+  } finally {
       setLoading(false);
       setLoadingStep('');
     }
@@ -129,9 +135,13 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
 
   return (
     <div className="max-w-5xl mx-auto space-y-10 pb-20 lg:pb-0">
-      <div className="text-center space-y-4">
-        <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-display">Build Your Examora Path</h2>
-        <p className="text-slate-500 dark:text-white/60 text-lg md:text-xl max-w-2xl mx-auto font-medium">Upload your syllabus and let Examora build your intelligent study strategy.</p>
+      <div className="text-center space-y-6">
+        <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 dark:text-white font-display">
+          Master Your <span className="text-blue-500">Curriculum</span>
+        </h2>
+        <p className="text-slate-500 dark:text-slate-400 text-xl md:text-2xl max-w-3xl mx-auto font-medium leading-relaxed">
+          The ultimate rule-based study engine. Faster, reliable, and completely private.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
