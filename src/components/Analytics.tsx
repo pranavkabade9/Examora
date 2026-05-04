@@ -43,7 +43,7 @@ export default function Analytics({ plan, progress }: AnalyticsProps) {
   });
   return (
     <div className="space-y-8 md:space-y-12 pb-32 lg:pb-0">
-      <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white font-display px-1 uppercase tracking-tighter">Performance</h1>
+      <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white font-display px-1 uppercase tracking-tighter">Performance</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
         {/* Main Chart */}
@@ -57,7 +57,7 @@ export default function Analytics({ plan, progress }: AnalyticsProps) {
               </h2>
               <p className="text-xs text-slate-400 font-bold uppercase tracking-widest ml-12">Active Learning Velocity</p>
             </div>
-            <div className="bg-slate-100 dark:bg-white/5 p-6 rounded-3xl border border-slate-200 dark:border-white/5 min-w-[160px] text-center">
+            <div className="bg-white/5 p-6 rounded-3xl border border-white/5 min-w-[160px] text-center">
               <p className="text-4xl md:text-6xl font-black text-blue-600 font-display leading-none">{completedTasksCount}</p>
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-3">Units Verified</p>
             </div>
@@ -71,11 +71,11 @@ export default function Analytics({ plan, progress }: AnalyticsProps) {
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-100 dark:text-white/5" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-white/5" vertical={false} />
                 <XAxis 
                   dataKey="name" 
                   stroke="currentColor" 
-                  className="text-slate-400 dark:text-white/20" 
+                  className="text-white/20" 
                   fontSize={10} 
                   tickLine={false} 
                   axisLine={false} 
@@ -110,7 +110,7 @@ export default function Analytics({ plan, progress }: AnalyticsProps) {
         </div>
 
         {/* Topic Mastery */}
-        <div className="glass-card p-8 md:p-14 space-y-10 rounded-[2.5rem] bg-gradient-to-br from-slate-50 to-white dark:from-white/[0.02] dark:to-transparent">
+        <div className="glass-card p-8 md:p-14 space-y-10 rounded-[2.5rem] bg-gradient-to-br from-white/[0.02] to-transparent">
           <div className="space-y-1">
             <h2 className="text-2xl md:text-3xl font-black flex items-center gap-4 font-display uppercase tracking-tight">
               <Brain className="w-8 h-8 text-purple-600" />
@@ -128,10 +128,10 @@ export default function Analytics({ plan, progress }: AnalyticsProps) {
                 className="space-y-4"
               >
                 <div className="flex justify-between items-end">
-                  <span className="text-[10px] md:text-xs font-black text-slate-400 dark:text-white/40 uppercase tracking-[0.2em]">{topic.name}</span>
-                  <span className="font-black text-sm md:text-lg text-slate-900 dark:text-white">{topic.score}%</span>
+                  <span className="text-[10px] md:text-xs font-black text-white/40 uppercase tracking-[0.2em]">{topic.name}</span>
+                  <span className="font-black text-sm md:text-lg text-white">{topic.score}%</span>
                 </div>
-                <div className="h-4 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden p-1">
+                <div className="h-4 bg-white/5 rounded-full overflow-hidden p-1">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${topic.score}%` }}
@@ -171,8 +171,8 @@ export default function Analytics({ plan, progress }: AnalyticsProps) {
                 className="p-6 bg-red-500/5 border border-red-500/10 rounded-[1.5rem] flex items-center justify-between group transition-all"
               >
                 <div className="space-y-1">
-                  <p className="font-black text-lg text-slate-900 dark:text-white uppercase tracking-tight">{item.name}</p>
-                  <p className="text-[10px] text-red-600 dark:text-red-400/60 font-black uppercase tracking-[0.2em]">Priority Re-Evaluation Required</p>
+                  <p className="font-black text-lg text-white uppercase tracking-tight">{item.name}</p>
+                  <p className="text-[10px] text-red-400/60 font-black uppercase tracking-[0.2em]">Priority Re-Evaluation Required</p>
                 </div>
                 <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center font-black text-red-600">
                   {item.score}%
@@ -183,7 +183,7 @@ export default function Analytics({ plan, progress }: AnalyticsProps) {
                 <div className="w-16 h-16 bg-green-500/10 rounded-[2rem] flex items-center justify-center mx-auto text-green-500">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <p className="text-[10px] font-black text-slate-500 dark:text-white/40 uppercase tracking-[0.3em]">No Critical Drift Detected</p>
+                <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">No Critical Drift Detected</p>
               </div>
             )}
           </div>
@@ -208,11 +208,11 @@ export default function Analytics({ plan, progress }: AnalyticsProps) {
               <motion.div 
                 key={i} 
                 whileHover={{ scale: 1.05, rotate: 1 }}
-                className="p-8 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-[2rem] flex flex-col items-center text-center gap-4"
+                className="p-8 bg-white/5 border border-white/5 rounded-[2rem] flex flex-col items-center text-center gap-4"
               >
-                <div className="text-5xl mb-2 grayscale hover:grayscale-0 transition-all duration-500">{item.icon}</div>
+                <div className="text-5xl mb-2 transition-all duration-500">{item.icon}</div>
                 <div className="space-y-1">
-                  <p className="font-black text-xs text-slate-900 dark:text-white uppercase tracking-widest">{item.label}</p>
+                  <p className="font-black text-xs text-white uppercase tracking-widest">{item.label}</p>
                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest opacity-60">{item.desc}</p>
                 </div>
               </motion.div>

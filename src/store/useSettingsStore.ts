@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { UserSettings, DEFAULT_SETTINGS, Theme } from '../types';
+import { UserSettings, DEFAULT_SETTINGS } from '../types';
 import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -8,7 +8,6 @@ interface SettingsState {
   isLoading: boolean;
   setSettings: (settings: Partial<UserSettings>) => void;
   updateNotifications: (notifications: Partial<UserSettings['notifications']>) => void;
-  setTheme: (theme: Theme) => void;
   loadSettings: (userId?: string) => Promise<void>;
   syncToBackend: () => Promise<void>;
 }
@@ -26,9 +25,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     // Save to localStorage immediately
     localStorage.setItem(SETTINGS_LOCAL_KEY, JSON.stringify(updatedSettings));
     
-    // Apply theme
-    applyTheme(updatedSettings.theme);
-    
     // Sync to backend if logged in
     get().syncToBackend();
   },
@@ -39,10 +35,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       notifications: { ...get().settings.notifications, ...notifications }
     };
     get().setSettings(updatedSettings);
-  },
-
-  setTheme: (theme) => {
-    get().setSettings({ theme });
   },
 
   loadSettings: async (userId) => {
@@ -73,7 +65,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       }
 
       set({ settings: loadedSettings, isLoading: false });
-      applyTheme(loadedSettings.theme);
     } catch (error) {
       console.error('Failed to load settings:', error);
       set({ isLoading: false });
@@ -93,29 +84,3 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
   }
 }));
-
-function applyTheme(theme: Theme) {
-  const root = window.document.documentElement;
-  root.classList.remove('light', 'dark');
-
-  const updateTheme = () => {
-    root.classList.remove('light', 'dark');
-    if (theme === 'system') {
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      root.classList.add(isDark ? 'dark' : 'light');
-    } else {
-      root.classList.add(theme);
-    }
-  };
-
-  updateTheme();
-
-  // Listen for system theme changes
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  const listener = () => {
-    if (theme === 'system') updateTheme();
-  };
-
-  mediaQuery.removeEventListener('change', listener);
-  mediaQuery.addEventListener('change', listener);
-}

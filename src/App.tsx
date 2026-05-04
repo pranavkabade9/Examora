@@ -128,8 +128,7 @@ export default function App() {
             await migrateGuestData(user.uid);
           }
         } else {
-          // No Firebase user -> Forces Intro Screen (Auth)
-          // Even if there's a guest session in localStorage, we force login/intro on reload
+          // Always show login screen if no Firebase user
           setUser(null);
           setIsGuest(false);
         }

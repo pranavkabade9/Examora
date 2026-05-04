@@ -7,12 +7,10 @@ export interface NotificationSettings {
 }
 
 export interface UserSettings {
-  theme: Theme;
   notifications: NotificationSettings;
 }
 
 export const DEFAULT_SETTINGS: UserSettings = {
-  theme: 'dark',
   notifications: {
     studyReminders: true,
     dailyGoalAlerts: true,

@@ -137,10 +137,10 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
   return (
     <div className="max-w-5xl mx-auto space-y-12 pb-32 lg:pb-0 px-1">
       <div className="text-center lg:text-left space-y-6">
-        <h2 className="text-5xl md:text-8xl font-black tracking-tighter text-slate-900 dark:text-white font-display leading-none uppercase">
+        <h2 className="text-5xl md:text-8xl font-black tracking-tighter text-white font-display leading-none uppercase">
           Build <br/> <span className="text-blue-600 underline decoration-blue-500/20 underline-offset-8">Curriculum</span>
         </h2>
-        <p className="text-slate-400 dark:text-white/40 text-sm md:text-xl font-bold uppercase tracking-[0.3em] max-w-3xl">
+        <p className="text-white/40 text-sm md:text-xl font-bold uppercase tracking-[0.3em] max-w-3xl">
           Automated Study Logic Engine • v4.0.2
         </p>
       </div>
@@ -161,14 +161,14 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
               {...getRootProps()} 
               className={cn(
                 "border-4 border-dashed rounded-[2.5rem] p-10 md:p-20 text-center transition-all cursor-pointer group",
-                isDragActive ? 'border-blue-500 bg-blue-500/5' : 'border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] hover:border-blue-500/50',
+                isDragActive ? 'border-blue-500 bg-blue-500/5' : 'border-white/5 bg-white/[0.02] hover:border-blue-500/50',
                 file && 'border-blue-600 bg-blue-600/[0.01]'
               )}
             >
               <input {...getInputProps()} />
               <div className={cn(
                 "w-20 h-20 mx-auto mb-6 rounded-3xl flex items-center justify-center transition-all duration-500",
-                file ? "bg-blue-600 text-white shadow-2xl shadow-blue-500/30" : "bg-white dark:bg-white/5 text-slate-300 group-hover:scale-110"
+                file ? "bg-blue-600 text-white shadow-2xl shadow-blue-500/30" : "bg-white/5 text-slate-300 group-hover:scale-110"
               )}>
                 <Upload className="w-10 h-10" />
               </div>
@@ -179,7 +179,7 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-lg font-black text-slate-900 dark:text-white font-display">PDF DROP</p>
+                  <p className="text-lg font-black text-white font-display">PDF DROP</p>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-loose">Automated Parsing Required <br/> (Maximum 5MB)</p>
                 </div>
               )}
@@ -187,15 +187,15 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
 
             <div className="space-y-4">
               <div className="flex items-center gap-3 px-4">
-                <div className="h-[1px] flex-1 bg-slate-100 dark:bg-white/5" />
-                <span className="text-[10px] font-black text-slate-300 dark:text-white/10 uppercase tracking-[0.3em]">Manual Entry</span>
-                <div className="h-[1px] flex-1 bg-slate-100 dark:bg-white/5" />
+                <div className="h-[1px] flex-1 bg-white/5" />
+                <span className="text-[10px] font-black text-white/10 uppercase tracking-[0.3em]">Manual Entry</span>
+                <div className="h-[1px] flex-1 bg-white/5" />
               </div>
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Paste Raw Curriculum Data..."
-                className="w-full h-48 bg-slate-50 dark:bg-white/[0.01] border border-slate-100 dark:border-white/5 rounded-3xl p-8 text-sm focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all resize-none font-medium"
+                className="w-full h-48 bg-white/[0.01] border border-white/5 rounded-3xl p-8 text-sm focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all resize-none font-medium text-white"
               />
             </div>
           </div>
@@ -219,9 +219,9 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
                     type="date"
                     value={examDate}
                     onChange={(e) => setExamDate(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-2xl p-6 md:p-8 focus:outline-none focus:ring-4 focus:ring-blue-600/10 text-slate-900 dark:text-white font-black text-xl"
+                    className="w-full bg-white/[0.02] border border-white/5 rounded-2xl p-6 md:p-8 focus:outline-none focus:ring-4 focus:ring-blue-600/10 text-white font-black text-xl [color-scheme:dark]"
                   />
-                  <div className="absolute right-6 top-1/2 -translate-y-1/2 p-3 bg-white dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5">
+                  <div className="absolute right-6 top-1/2 -translate-y-1/2 p-3 bg-white/5 rounded-xl border border-white/5">
                     <Clock className="w-6 h-6 text-slate-300" />
                   </div>
                 </div>
@@ -239,7 +239,7 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
                     max="16"
                     value={hoursPerDay}
                     onChange={(e) => setHoursPerDay(parseInt(e.target.value))}
-                    className="w-full h-3 bg-slate-100 dark:bg-white/5 rounded-full appearance-none cursor-pointer accent-blue-600"
+                    className="w-full h-3 bg-white/5 rounded-full appearance-none cursor-pointer accent-blue-600"
                   />
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
                         "py-5 rounded-3xl text-sm font-black uppercase tracking-widest transition-all border",
                         difficulty === level 
                           ? 'bg-blue-600 text-white border-blue-500 shadow-2xl shadow-blue-600/30 -translate-y-1' 
-                          : 'bg-slate-50 dark:bg-white/[0.02] text-slate-400 border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10'
+                          : 'bg-white/[0.02] text-slate-400 border-white/5 hover:bg-white/10'
                       )}
                     >
                       {level}
@@ -269,7 +269,7 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
           <button
             onClick={handleProcess}
             disabled={loading || (!text && !file) || !examDate}
-            className="w-full py-8 md:py-10 bg-black dark:bg-white hover:bg-slate-900 dark:hover:bg-slate-100 disabled:opacity-20 text-white dark:text-black font-black rounded-[2.5rem] flex items-center justify-center gap-6 transition-all shadow-2xl active:scale-95 group relative overflow-hidden"
+            className="w-full py-8 md:py-10 bg-white hover:bg-slate-100 disabled:opacity-20 text-black font-black rounded-[2.5rem] flex items-center justify-center gap-6 transition-all shadow-2xl active:scale-95 group relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-blue-600 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-700 opacity-10" />
             

@@ -34,7 +34,7 @@ export default function Logo({ className = "", showText = true, size = 'md' }: L
         >
           <path 
             d="M12 3L14.5 9H21L16 13L18 20L12 16L6 20L8 13L3 9H9.5L12 3Z" 
-            className="fill-blue-500 dark:fill-blue-400"
+            className="fill-blue-400"
           />
           <path 
             d="M12 3L14.5 9H21L16 13L18 20L12 16L6 20L8 13L3 9H9.5L12 3Z" 
@@ -56,7 +56,7 @@ export default function Logo({ className = "", showText = true, size = 'md' }: L
 
       {showText && (
         <motion.span 
-          className={`${sizes[size].text} font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 font-display`}
+          className={`${sizes[size].text} font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 font-display`}
           initial={{ x: -10, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}

@@ -12,10 +12,10 @@ export default function SettingsButton({ onClick }: SettingsButtonProps) {
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       onClick={onClick}
-      className="fixed bottom-8 right-8 z-[60] glass-card p-4 rounded-full shadow-2xl glow-blue border-slate-200 dark:border-white/20 bg-white/80 dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 transition-all"
+      className="fixed bottom-8 right-8 z-[60] glass-card p-4 rounded-full shadow-2xl glow-blue border-white/20 bg-white/10 hover:bg-white/20 transition-all"
       aria-label="Open Settings"
     >
-      <Settings className="w-6 h-6 text-slate-600 dark:text-white" />
+      <Settings className="w-6 h-6 text-white" />
     </motion.button>
   );
 }

@@ -34,10 +34,10 @@ export default function StudySystemOverview({ onStart }: StudySystemOverviewProp
   return (
     <div className="max-w-4xl mx-auto space-y-12">
       <div className="text-center space-y-4">
-        <h2 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white font-display">
+        <h2 className="text-4xl md:text-6xl font-black text-white font-display">
           Rule-Based <span className="text-blue-500">Planning</span>
         </h2>
-        <p className="text-slate-500 text-lg md:text-xl font-medium">
+        <p className="text-slate-400 text-lg md:text-xl font-medium">
           A logic-driven system that turns your syllabus into a master study plan.
         </p>
       </div>
@@ -55,10 +55,10 @@ export default function StudySystemOverview({ onStart }: StudySystemOverviewProp
               <feature.icon className={`w-7 h-7 ${feature.color}`} />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-black text-slate-900 dark:text-white font-display">
+              <h3 className="text-xl font-black text-white font-display">
                 {feature.title}
               </h3>
-              <p className="text-slate-500 text-sm leading-relaxed font-medium">
+              <p className="text-slate-400 text-sm leading-relaxed font-medium">
                 {feature.desc}
               </p>
             </div>

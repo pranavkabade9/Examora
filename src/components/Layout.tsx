@@ -32,9 +32,9 @@ export default function Layout({ children, activeTab, setActiveTab, user, isGues
   ];
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white transition-colors duration-300">
+    <div className="flex flex-col h-screen overflow-hidden bg-[#020617] text-white transition-colors duration-300">
       {/* Mobile Sticky Header */}
-      <header className="lg:hidden h-16 flex items-center justify-between px-6 bg-white/80 dark:bg-[#020617]/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-900 z-40">
+      <header className="lg:hidden h-16 flex items-center justify-between px-6 bg-[#020617]/80 backdrop-blur-xl border-b border-slate-900 z-40">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
             <LayoutDashboard className="w-5 h-5" />
@@ -43,7 +43,7 @@ export default function Layout({ children, activeTab, setActiveTab, user, isGues
         </div>
         <button 
           onClick={() => setIsSettingsOpen(true)}
-          className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-500 dark:text-slate-400 active:scale-90 transition-transform"
+          className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-slate-400 active:scale-90 transition-transform"
         >
           <SettingsIcon className="w-5 h-5" />
         </button>
@@ -51,7 +51,7 @@ export default function Layout({ children, activeTab, setActiveTab, user, isGues
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Desktop */}
-        <aside className="hidden lg:flex w-72 bg-white dark:bg-[#050505] border-r border-slate-200 dark:border-slate-900 flex-col">
+        <aside className="hidden lg:flex w-72 bg-[#050505] border-r border-slate-900 flex-col">
           <div className="p-10 flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
               <LayoutDashboard className="w-6 h-6" />
@@ -68,7 +68,7 @@ export default function Layout({ children, activeTab, setActiveTab, user, isGues
                   "w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 font-bold text-sm",
                   activeTab === item.id 
                     ? "bg-blue-600/10 text-blue-500 border border-blue-500/20 shadow-lg shadow-blue-500/5" 
-                    : "text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 border border-transparent"
+                    : "text-slate-500 hover:text-white hover:bg-slate-900 border border-transparent"
                 )}
               >
                 <item.icon className={cn("w-5 h-5", activeTab === item.id ? "text-blue-500" : "text-slate-500")} />
@@ -77,12 +77,12 @@ export default function Layout({ children, activeTab, setActiveTab, user, isGues
             ))}
           </nav>
 
-          <div className="p-8 border-t border-slate-100 dark:border-slate-900">
+          <div className="p-8 border-t border-slate-900">
             <button 
               onClick={() => setIsSettingsOpen(true)}
-              className="w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group"
+              className="w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-900/50 border border-slate-800 hover:bg-slate-800 transition-all group"
             >
-              <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-xl flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+              <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center group-hover:bg-blue-600 transition-colors">
                 <SettingsIcon className="w-5 h-5 text-slate-500 group-hover:text-white" />
               </div>
               <div className="flex-1 text-left min-w-0">

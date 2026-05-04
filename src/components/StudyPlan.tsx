@@ -18,23 +18,23 @@ export default function StudyPlan({ plan, onToggleTask }: StudyPlanProps) {
   return (
     <div className="space-y-8 pb-32 lg:pb-0">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-1">
-        <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white font-display italic">Timeline</h1>
-        <div className="flex items-center gap-3 bg-white dark:bg-white/5 p-2 rounded-[2rem] w-full md:w-auto shadow-xl shadow-black/[0.02] border border-slate-200 dark:border-white/5">
+        <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white font-display italic">Timeline</h1>
+        <div className="flex items-center gap-3 bg-white/5 p-2 rounded-[2rem] w-full md:w-auto shadow-xl shadow-black/[0.02] border border-white/5">
           <button 
             onClick={() => setSelectedDay(Math.max(0, selectedDay - 1))}
             disabled={selectedDay === 0}
-            className="p-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full disabled:opacity-30 transition-all active:scale-90"
+            className="p-4 bg-slate-800 hover:bg-slate-700 rounded-full disabled:opacity-30 transition-all active:scale-90"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div className="flex-1 text-center min-w-[120px]">
-             <span className="font-black text-sm md:text-xl uppercase tracking-widest text-slate-900 dark:text-white">Day {selectedDay + 1}</span>
+             <span className="font-black text-sm md:text-xl uppercase tracking-widest text-white">Day {selectedDay + 1}</span>
              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">{days.length} Days Total</p>
           </div>
           <button 
             onClick={() => setSelectedDay(Math.min(days.length - 1, selectedDay + 1))}
             disabled={selectedDay === days.length - 1}
-            className="p-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full disabled:opacity-30 transition-all active:scale-90"
+            className="p-4 bg-slate-800 hover:bg-slate-700 rounded-full disabled:opacity-30 transition-all active:scale-90"
           >
             <ChevronRight className="w-6 h-6" />
           </button>
@@ -56,7 +56,7 @@ export default function StudyPlan({ plan, onToggleTask }: StudyPlanProps) {
                   "min-w-[140px] lg:min-w-0 text-left p-6 rounded-[2rem] transition-all duration-500 group shrink-0 border snap-center",
                   selectedDay === i 
                     ? "bg-blue-600 text-white border-blue-500 shadow-2xl shadow-blue-500/30 scale-[1.05]" 
-                    : "bg-white dark:bg-white/5 border-slate-200/50 dark:border-white/5 hover:border-blue-500/50 text-slate-500 dark:text-white/40"
+                    : "bg-white/5 border-white/5 hover:border-blue-500/50 text-white/40"
                 )}
               >
                 <div className="flex items-center justify-between mb-3">
@@ -67,7 +67,7 @@ export default function StudyPlan({ plan, onToggleTask }: StudyPlanProps) {
                     <div className="w-2 h-2 rounded-full bg-blue-500/20" />
                   )}
                 </div>
-                <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-widest opacity-60">
+                <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-widest opacity-60 text-white">
                    {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                    <span className="text-xs">{completedTasks}/{day.tasks.length}</span>
                 </div>
@@ -85,12 +85,12 @@ export default function StudyPlan({ plan, onToggleTask }: StudyPlanProps) {
                 <Calendar className="w-10 h-10 md:w-14 md:h-14 text-white" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white font-display tracking-tight leading-none italic">
+                <h2 className="text-3xl md:text-5xl font-black text-white font-display tracking-tight leading-none italic">
                   {new Date(currentDay.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                 </h2>
                 <div className="flex items-center gap-3">
                    <div className="h-1.5 w-12 bg-blue-500 rounded-full" />
-                   <p className="text-xs md:text-lg text-slate-500 dark:text-white/60 font-black uppercase tracking-widest">{currentDay.tasks.length} Learning Modules</p>
+                   <p className="text-xs md:text-lg text-white/60 font-black uppercase tracking-widest">{currentDay.tasks.length} Learning Modules</p>
                 </div>
               </div>
             </div>
@@ -108,7 +108,7 @@ export default function StudyPlan({ plan, onToggleTask }: StudyPlanProps) {
                   "glass-card p-8 md:p-10 flex flex-col justify-between gap-8 group transition-all border cursor-pointer select-none rounded-[2.5rem] relative overflow-hidden",
                   task.completed 
                     ? "opacity-60 bg-green-500/5 border-green-500/20" 
-                    : "hover:border-blue-500/40 hover:bg-blue-600/[0.01] dark:hover:bg-white/[0.01] border-slate-200/50 dark:border-white/5"
+                    : "hover:border-blue-500/40 hover:bg-white/[0.01] border-white/5"
                 )}
               >
                 <div>
@@ -132,18 +132,18 @@ export default function StudyPlan({ plan, onToggleTask }: StudyPlanProps) {
                   </div>
                   <h3 className={cn(
                     "text-2xl md:text-3xl font-black leading-tight mb-4 font-display tracking-tight",
-                    task.completed && "line-through text-slate-400 dark:text-white/30"
+                    task.completed && "line-through text-white/30"
                   )}>
                     {task.topic}
                   </h3>
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest">
-                    <span className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 px-3 py-1.5 rounded-full"><Clock className="w-4 h-4" /> {task.duration}</span>
-                    <span className="w-1.5 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full" />
-                    <span className="bg-slate-100 dark:bg-white/5 px-3 py-1.5 rounded-full">{task.type}</span>
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 font-black uppercase tracking-widest">
+                    <span className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full"><Clock className="w-4 h-4" /> {task.duration}</span>
+                    <span className="w-1.5 h-1.5 bg-slate-800 rounded-full" />
+                    <span className="bg-white/5 px-3 py-1.5 rounded-full">{task.type}</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-white/5">
+                <div className="flex items-center justify-between pt-6 border-t border-white/5">
                   <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Module Status</span>
                   <div className="flex items-center gap-2">
                     <div className={cn("w-2 h-2 rounded-full animate-pulse", task.completed ? "bg-green-500" : "bg-blue-500")} />

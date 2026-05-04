@@ -73,7 +73,7 @@ export default function Auth({ onGuestLogin }: AuthProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#020617] text-slate-900 dark:text-slate-200 selection:bg-blue-500/30 overflow-x-hidden transition-colors duration-300">
+    <div className="min-h-screen bg-[#020617] text-slate-200 selection:bg-blue-500/30 overflow-x-hidden transition-colors duration-300">
       {/* Hero Section */}
       <div className="min-h-screen flex items-center justify-center p-4 md:p-12 relative overflow-hidden">
         {/* Background Ambience */}
@@ -91,16 +91,16 @@ export default function Auth({ onGuestLogin }: AuthProps) {
           {/* Left Content */}
           <div className="space-y-10 text-center lg:text-left">
             <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 shadow-lg shadow-blue-500/5">
-              <Rocket className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Pure Study Logic</span>
+              <Rocket className="w-3.5 h-3.5 text-blue-400" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Pure Study Logic</span>
             </motion.div>
 
             <motion.div variants={itemVariants} className="space-y-6">
-              <h1 className="text-5xl md:text-8xl font-black tracking-tight text-slate-900 dark:text-white font-display leading-[1.1] md:leading-[0.95]">
+              <h1 className="text-5xl md:text-8xl font-black tracking-tight text-white font-display leading-[1.1] md:leading-[0.95]">
                 Plan Your <br/>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400">Success</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 dark:to-pink-400">Success</span>
               </h1>
-              <p className="text-lg md:text-2xl text-slate-600 dark:text-slate-400 font-medium font-display leading-relaxed max-w-xl mx-auto lg:mx-0">
+              <p className="text-lg md:text-2xl text-slate-400 font-medium font-display leading-relaxed max-w-xl mx-auto lg:mx-0">
                 A minimalist study architect designed for verified progress and consistent deep-work sessions.
               </p>
             </motion.div>
@@ -125,7 +125,7 @@ export default function Auth({ onGuestLogin }: AuthProps) {
               </button>
               <button 
                 onClick={() => document.getElementById('vision')?.scrollIntoView({ behavior: 'smooth' })}
-                className="w-full sm:w-auto px-10 py-5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all hover:bg-slate-50 dark:hover:bg-white/10 active:scale-95 text-xs uppercase tracking-widest backdrop-blur-md"
+                className="w-full sm:w-auto px-10 py-5 bg-white/5 border border-white/10 text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all hover:bg-white/10 active:scale-95 text-xs uppercase tracking-widest backdrop-blur-md"
               >
                 Learn More
               </button>
@@ -139,44 +139,44 @@ export default function Auth({ onGuestLogin }: AuthProps) {
             className="relative px-2 sm:px-0"
           >
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[2.5rem] blur opacity-20" />
-            <div className="relative glass-card bg-white dark:bg-[#0f172a]/80 p-8 sm:p-14 border-slate-200 dark:border-slate-800/50 rounded-[2.5rem] shadow-2xl backdrop-blur-3xl flex flex-col items-center">
+            <div className="relative glass-card bg-[#0f172a]/80 p-8 sm:p-14 border-slate-800/50 rounded-[2.5rem] shadow-2xl backdrop-blur-3xl flex flex-col items-center">
               <div className="flex items-center gap-3 mb-10">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
                   <Sparkles className="text-white w-6 h-6" />
                 </div>
-                <span className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white font-display uppercase">Examora</span>
+                <span className="text-3xl font-black tracking-tighter text-white font-display uppercase">Examora</span>
               </div>
 
               <div className="text-center mb-10">
-                <h2 className="text-4xl font-black text-slate-900 dark:text-white font-display mb-2">Get Started</h2>
-                <p className="text-slate-500 dark:text-slate-400 font-medium tracking-wide">Continue to your workspace</p>
+                <h2 className="text-4xl font-black text-white font-display mb-2">Get Started</h2>
+                <p className="text-slate-400 font-medium tracking-wide">Continue to your workspace</p>
               </div>
 
               <div className="w-full space-y-4">
                 <motion.button 
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleGoogleSignIn}
-                  disabled={isLoggingIn}
-                  className="w-full py-5 bg-slate-100 dark:bg-white hover:bg-slate-200 dark:hover:bg-slate-50 text-slate-900 font-black rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl shadow-black/5 disabled:opacity-50 border border-slate-200"
+                   whileHover={{ scale: 1.02 }}
+                   whileTap={{ scale: 0.98 }}
+                   onClick={handleGoogleSignIn}
+                   disabled={isLoggingIn}
+                   className="w-full py-5 bg-white hover:bg-slate-50 text-slate-900 font-black rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl shadow-black/5 disabled:opacity-50"
                 >
                   <LogIn className="w-5 h-5 text-blue-600" />
                   <span className="uppercase tracking-[0.2em] text-[11px]">Continue with Google</span>
                 </motion.button>
 
                 <div className="relative py-4 flex items-center gap-4">
-                  <div className="h-[1px] flex-1 bg-slate-200 dark:bg-slate-800" />
-                  <span className="text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest">OR</span>
-                  <div className="h-[1px] flex-1 bg-slate-200 dark:bg-slate-800" />
+                  <div className="h-[1px] flex-1 bg-slate-800" />
+                  <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">OR</span>
+                  <div className="h-[1px] flex-1 bg-slate-800" />
                 </div>
 
                 <motion.button 
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={onGuestLogin}
-                  className="w-full py-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-blue-500/30 hover:border-blue-500/60 text-slate-900 dark:text-white font-bold rounded-2xl flex items-center justify-center gap-3 transition-all group shadow-sm"
+                  className="w-full py-5 bg-slate-900 border border-blue-500/30 hover:border-blue-500/60 text-white font-bold rounded-2xl flex items-center justify-center gap-3 transition-all group shadow-sm"
                 >
-                  <Zap className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+                  <Zap className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
                   <span className="uppercase tracking-[0.2em] text-[11px]">Continue as Guest ⚡</span>
                 </motion.button>
               </div>
@@ -204,16 +204,16 @@ export default function Auth({ onGuestLogin }: AuthProps) {
           className="space-y-16 text-center"
         >
           <motion.div variants={itemVariants} className="space-y-4">
-            <span className="text-blue-600 dark:text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">The Vision</span>
-            <h2 className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white font-display tracking-tight">What is Examora?</h2>
+            <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">The Vision</span>
+            <h2 className="text-5xl md:text-7xl font-black text-white font-display tracking-tight">What is Examora?</h2>
           </motion.div>
 
           <motion.div 
             variants={itemVariants}
-            className="glass-card max-w-5xl mx-auto p-12 md:p-20 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a]/30 rounded-[3rem] relative overflow-hidden shadow-xl"
+            className="glass-card max-w-5xl mx-auto p-12 md:p-20 border-slate-800 bg-[#0f172a]/30 rounded-[3rem] relative overflow-hidden shadow-xl"
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500" />
-            <p className="text-2xl md:text-3xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed font-display mb-16">
+            <p className="text-2xl md:text-3xl text-slate-300 font-medium leading-relaxed font-display mb-16">
               Examora helps you convert your syllabus into a structured study plan so you always know what to study and when. It takes the guesswork out of preparation.
             </p>
             
@@ -249,8 +249,8 @@ export default function Auth({ onGuestLogin }: AuthProps) {
           className="space-y-20"
         >
           <motion.div variants={itemVariants} className="text-center space-y-4">
-            <span className="text-blue-600 dark:text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Step-By-Step</span>
-            <h2 className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white font-display tracking-tight">How it Works</h2>
+            <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Step-By-Step</span>
+            <h2 className="text-5xl md:text-7xl font-black text-white font-display tracking-tight">How it Works</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -270,8 +270,8 @@ export default function Auth({ onGuestLogin }: AuthProps) {
           className="space-y-20"
         >
           <motion.div variants={itemVariants} className="text-center space-y-4">
-            <span className="text-blue-600 dark:text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Core Tools</span>
-            <h2 className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white font-display tracking-tight">Everything you need</h2>
+            <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Core Tools</span>
+            <h2 className="text-5xl md:text-7xl font-black text-white font-display tracking-tight">Everything you need</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -303,9 +303,9 @@ export default function Auth({ onGuestLogin }: AuthProps) {
         >
           <motion.div 
             variants={itemVariants}
-            className="space-y-10 glass-card p-10 md:p-14 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a]/30 rounded-[3rem] shadow-xl"
+            className="space-y-10 glass-card p-10 md:p-14 border-slate-800 bg-[#0f172a]/30 rounded-[3rem] shadow-xl"
           >
-            <h3 className="text-4xl font-black font-display text-slate-900 dark:text-white">Why use Examora?</h3>
+            <h3 className="text-4xl font-black font-display text-white">Why use Examora?</h3>
             <ul className="space-y-8">
               <BenefitItem icon={CheckCircle2} title="STAY ORGANIZED" desc="Keep all your subjects and topics in one structured place." />
               <BenefitItem icon={ShieldCheck} title="AVOID LAST-MINUTE STRESS" desc="Planned progress prevents the panic of 'cramming' before exams." />
@@ -317,13 +317,13 @@ export default function Auth({ onGuestLogin }: AuthProps) {
 
           <motion.div 
             variants={itemVariants}
-            className="flex flex-col justify-center p-10 md:p-14 glass-card border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a]/30 rounded-[3rem] space-y-8 shadow-xl"
+            className="flex flex-col justify-center p-10 md:p-14 glass-card border-slate-800 bg-[#0f172a]/30 rounded-[3rem] space-y-8 shadow-xl"
           >
-            <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-500">
+            <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500">
               <Monitor className="w-8 h-8" />
             </div>
-            <h3 className="text-4xl font-black font-display text-slate-900 dark:text-white">Simple & Accessible</h3>
-            <p className="text-slate-500 dark:text-slate-400 text-xl leading-relaxed font-medium">
+            <h3 className="text-4xl font-black font-display text-white">Simple & Accessible</h3>
+            <p className="text-slate-400 text-xl leading-relaxed font-medium">
               Experience a clean and easy-to-use interface that adapts to your device. Whether you're on a mobile, tablet, or desktop, your plan is always with you.
             </p>
             <div className="flex gap-4">
@@ -341,9 +341,9 @@ export default function Auth({ onGuestLogin }: AuthProps) {
           variants={containerVariants}
           className="text-center space-y-8"
         >
-          <motion.span variants={itemVariants} className="text-blue-600 dark:text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Starting</motion.span>
-          <motion.h2 variants={itemVariants} className="text-6xl md:text-8xl font-black text-slate-900 dark:text-white font-display tracking-tight leading-none uppercase">Zero Setup Required</motion.h2>
-          <motion.p variants={itemVariants} className="text-slate-500 dark:text-slate-400 text-xl md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
+          <motion.span variants={itemVariants} className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Starting</motion.span>
+          <motion.h2 variants={itemVariants} className="text-6xl md:text-8xl font-black text-white font-display tracking-tight leading-none uppercase">Zero Setup Required</motion.h2>
+          <motion.p variants={itemVariants} className="text-slate-400 text-xl md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
             Start your journey instantly. No login or complicated setup required to begin—just use Guest Mode and upgrade later if you want to sync across devices.
           </motion.p>
           <motion.div variants={itemVariants} className="w-32 h-1 bg-blue-600/50 mx-auto rounded-full blur-[1px]" />
