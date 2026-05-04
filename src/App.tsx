@@ -8,15 +8,15 @@ import Dashboard from './components/Dashboard';
 import SyllabusUpload from './components/SyllabusUpload';
 import StudyPlan from './components/StudyPlan';
 import Analytics from './components/Analytics';
-import AssistantWorkspace from './components/AssistantWorkspace';
 import ResetModal from './components/ResetModal';
-import { generateStudyPlanLocally, getSmartSuggestions } from './lib/studyLogic';
+import StudySystemOverview from './components/StudySystemOverview';
+import { generateStudyPlanLocally } from './lib/studyLogic';
 import { getGuestData, saveGuestData, migrateGuestData } from './lib/auth-utils';
 import { Loader2, Info } from 'lucide-react';
 import { motion } from 'motion/react';
 import { setDoc, doc, getDoc, deleteDoc, getDocs } from 'firebase/firestore';
-import { Suggestion } from './components/SuggestionCard';
 import { clearGuestData } from './lib/auth-utils';
+import { DEMO_SYLLABUS, DEMO_PLAN, DEMO_PROGRESS } from './lib/demoData';
 
 import { useSettingsStore } from './store/useSettingsStore';
 
@@ -30,11 +30,16 @@ export default function App() {
   const [syllabus, setSyllabus] = useState<any>(null);
   const [plan, setPlan] = useState<any>(null);
   const [progress, setProgress] = useState<any[]>([]);
-  const [memory, setMemory] = useState<any>(null);
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [generatingPlan, setGeneratingPlan] = useState(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
+
+  useEffect(() => {
+    if (!syllabus) {
+      setShowUpload(false);
+    }
+  }, [syllabus]);
 
   const handleToggleTask = async (dayIndex: number, taskIndex: number) => {
     if (!plan) return;
@@ -62,21 +67,6 @@ export default function App() {
       };
       updatedProgress.push(newProgressRecord);
       
-      // Update AI Memory
-      const updatedMemory = {
-        ...memory,
-        completedTopics: Array.from(new Set([...(memory?.completedTopics || []), task.topic])),
-        lastUpdated: new Date().toISOString()
-      };
-      setMemory(updatedMemory);
-      if (user) {
-        try {
-          await setDoc(doc(db, 'memories', user.uid), updatedMemory);
-        } catch (error) {
-          handleFirestoreError(error, OperationType.WRITE, `memories/${user.uid}`);
-        }
-      }
-
       // Persist Progress to DB
       if (user) {
         try {
@@ -121,104 +111,38 @@ export default function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const sessionActive = localStorage.getItem('examora_session_active') === 'true';
+        // Session Check Logic:
+        // 1. Check if Firebase user exists
+        // 2. Check if Guest user exists in localStorage
+        const storedUser = localStorage.getItem('user');
+        const isGuestSession = storedUser && JSON.parse(storedUser).type === 'guest';
 
         if (user) {
-          // Load settings first
+          // Google Authenticated User exists
           await loadSettings(user.uid);
-          
-          // Check for guest data to migrate
-          const guestData = getGuestData();
-          if (guestData) {
-            await migrateGuestData(user.uid);
-          }
           setUser(user);
           setIsGuest(false);
-          localStorage.setItem('examora_session_active', 'true');
           
-          // Load memory
-          const memorySnap = await getDoc(doc(db, 'memories', user.uid));
-          if (memorySnap.exists()) {
-            setMemory(memorySnap.data());
-          } else {
-            const initialMemory = {
-              userId: user.uid,
-              weakTopics: [],
-              completedTopics: [],
-              performanceHistory: [],
-              pastQuestions: [],
-              lastUpdated: new Date().toISOString()
-            };
-            await setDoc(doc(db, 'memories', user.uid), initialMemory);
-            setMemory(initialMemory);
-          }
-        } else if (sessionActive) {
-          // Load guest settings
-          await loadSettings();
-          
-          // Only automatically enter if they explicitly chose guest mode in this "session"
           const guestData = getGuestData();
-          if (guestData) {
-            setIsGuest(true);
-            setSyllabus(guestData.syllabus);
-            setPlan(guestData.plan);
-            setProgress(guestData.progress || []);
-            setMemory({ weakTopics: [], completedTopics: [] });
-          } else {
-            // No data even if session active? Clear it.
-            localStorage.removeItem('examora_session_active');
-            setIsGuest(false);
+          if (guestData && Object.keys(guestData).length > 0) {
+            await migrateGuestData(user.uid);
           }
-          setUser(null);
         } else {
-          // No user, no guest session active -> Force Intro
-          await loadSettings();
+          // No Firebase user -> Forces Intro Screen (Auth)
+          // Even if there's a guest session in localStorage, we force login/intro on reload
           setUser(null);
           setIsGuest(false);
         }
       } catch (error) {
         console.error('Auth state change error:', error);
+        setUser(null);
+        setIsGuest(false);
       } finally {
         setLoading(false);
       }
     });
     return unsubscribe;
   }, []);
-
-  // Smart Suggestion Engine
-  useEffect(() => {
-    if (loading || (!user && !isGuest)) return;
-
-    const fetchSuggestions = () => {
-      const smartSuggestions = getSmartSuggestions({
-        memory,
-        progress
-      });
-      setSuggestions(smartSuggestions);
-    };
-
-    fetchSuggestions();
-    const interval = setInterval(fetchSuggestions, 60000); // Every min
-    return () => clearInterval(interval);
-  }, [loading, user, isGuest, memory, progress]);
-
-  const handleUpdateMemory = async (newWeakTopics: string[]) => {
-    if (!user && !isGuest) return;
-
-    const updatedMemory = {
-      ...memory,
-      weakTopics: Array.from(new Set([...(memory?.weakTopics || []), ...newWeakTopics])),
-      lastUpdated: new Date().toISOString()
-    };
-
-    setMemory(updatedMemory);
-
-    if (user) {
-      await setDoc(doc(db, 'memories', user.uid), updatedMemory);
-    } else if (isGuest) {
-      saveGuestData({ memory: updatedMemory } as any);
-    }
-  };
 
   useEffect(() => {
     if (!user || isGuest) return;
@@ -332,18 +256,32 @@ export default function App() {
   };
 
   const handleGuestLogin = () => {
-    localStorage.setItem('examora_session_active', 'true');
+    // Selection logic: Create guest session
+    localStorage.setItem('user', JSON.stringify({ type: 'guest' }));
     setIsGuest(true);
-    const guestData = getGuestData();
-    if (!guestData) {
-      saveGuestData({}); // Initialize empty guest session if none exists
+    
+    // 2. Load demo data
+    const existingGuestData = getGuestData();
+    if (!existingGuestData || Object.keys(existingGuestData).length === 0) {
+      // Initialize with Demo Data if first time
+      setSyllabus(DEMO_SYLLABUS);
+      setPlan(DEMO_PLAN);
+      setProgress(DEMO_PROGRESS);
+      
+      saveGuestData({ 
+        syllabus: DEMO_SYLLABUS, 
+        plan: DEMO_PLAN, 
+        progress: DEMO_PROGRESS 
+      });
     } else {
-      // Rehydrate existing guest session
-      setSyllabus(guestData.syllabus);
-      setPlan(guestData.plan);
-      setProgress(guestData.progress || []);
-      setMemory({ weakTopics: [], completedTopics: [] });
+      // 3. Load existing guest data
+      setSyllabus(existingGuestData.syllabus);
+      setPlan(existingGuestData.plan);
+      setProgress(existingGuestData.progress || []);
     }
+    
+    // 4. Redirect to dashboard
+    setActiveTab('dashboard');
   };
 
   const handleReset = async () => {
@@ -356,8 +294,6 @@ export default function App() {
       setSyllabus(null);
       setPlan(null);
       setProgress([]);
-      setMemory({ weakTopics: [], completedTopics: [] });
-      setSuggestions([]);
 
       // 3. Clear Storage
       if (isGuest) {
@@ -372,17 +308,6 @@ export default function App() {
             await deleteDoc(doc(db, colName, docSnap.id));
           }
         }
-        // Reset Memory
-        const initialMemory = {
-          userId: user.uid,
-          weakTopics: [],
-          completedTopics: [],
-          performanceHistory: [],
-          pastQuestions: [],
-          lastUpdated: new Date().toISOString()
-        };
-        await setDoc(doc(db, 'memories', user.uid), initialMemory);
-        setMemory(initialMemory);
       }
 
       // 4. Redirect and Feedback
@@ -397,6 +322,23 @@ export default function App() {
     } finally {
       setIsResetting(false);
     }
+  };
+
+  const handleLogout = async () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('userType');
+    localStorage.removeItem('exam_killer_guest_session');
+    
+    if (user) {
+      await auth.signOut();
+    }
+    
+    setUser(null);
+    setIsGuest(false);
+    setSyllabus(null);
+    setPlan(null);
+    setProgress([]);
+    setActiveTab('dashboard');
   };
 
   if (loading) {
@@ -418,6 +360,7 @@ export default function App() {
       user={user} 
       isGuest={isGuest}
       onResetRequest={() => setIsResetModalOpen(true)}
+      onLogout={handleLogout}
       hasSyllabus={!!syllabus}
     >
       {isGuest && (
@@ -461,31 +404,34 @@ export default function App() {
         <>
           {activeTab === 'dashboard' && (
             <Dashboard 
+              user={user}
+              syllabus={syllabus}
               plan={plan} 
               progress={progress} 
-              suggestions={suggestions}
               onAction={(action) => setActiveTab(action)} 
               onResetRequest={() => setIsResetModalOpen(true)}
               onToggleTask={handleToggleTask}
+              isGuest={isGuest}
             />
           )}
           {activeTab === 'syllabus' && (
-            <SyllabusUpload onComplete={handleSyllabusComplete} isGuest={isGuest} />
+            showUpload || !syllabus ? (
+              <SyllabusUpload 
+                onComplete={(id, data) => {
+                  handleSyllabusComplete(id, data);
+                  setShowUpload(false);
+                }} 
+                isGuest={isGuest} 
+              />
+            ) : (
+              <StudySystemOverview onStart={() => setShowUpload(true)} />
+            )
           )}
           {activeTab === 'plan' && (
             <StudyPlan plan={plan} onToggleTask={handleToggleTask} />
           )}
           {activeTab === 'analytics' && (
             <Analytics plan={plan} progress={progress} />
-          )}
-          {activeTab === 'chat' && (
-            <AssistantWorkspace 
-              syllabus={syllabus}
-              plan={plan}
-              memory={memory}
-              suggestions={suggestions}
-              onUpdateMemory={handleUpdateMemory}
-            />
           )}
         </>
       )}

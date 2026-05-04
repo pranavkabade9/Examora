@@ -16,31 +16,34 @@ export default function StudyPlan({ plan, onToggleTask }: StudyPlanProps) {
   if (!days.length) return null;
 
   return (
-    <div className="space-y-8 pb-24 lg:pb-0">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-display">Your Study Plan</h1>
-        <div className="flex items-center gap-2 bg-slate-500/5 dark:bg-white/5 p-1.5 rounded-2xl w-full md:w-auto justify-between md:justify-start border border-slate-200 dark:border-white/10">
+    <div className="space-y-8 pb-32 lg:pb-0">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-1">
+        <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white font-display italic">Timeline</h1>
+        <div className="flex items-center gap-3 bg-white dark:bg-white/5 p-2 rounded-[2rem] w-full md:w-auto shadow-xl shadow-black/[0.02] border border-slate-200 dark:border-white/5">
           <button 
             onClick={() => setSelectedDay(Math.max(0, selectedDay - 1))}
             disabled={selectedDay === 0}
-            className="p-3 hover:bg-slate-500/10 dark:hover:bg-white/10 rounded-xl disabled:opacity-30 transition-all active:scale-95"
+            className="p-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full disabled:opacity-30 transition-all active:scale-90"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <span className="px-6 font-black text-sm md:text-base whitespace-nowrap uppercase tracking-widest text-slate-700 dark:text-white/80">Day {selectedDay + 1} <span className="text-slate-400">/ {days.length}</span></span>
+          <div className="flex-1 text-center min-w-[120px]">
+             <span className="font-black text-sm md:text-xl uppercase tracking-widest text-slate-900 dark:text-white">Day {selectedDay + 1}</span>
+             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">{days.length} Days Total</p>
+          </div>
           <button 
             onClick={() => setSelectedDay(Math.min(days.length - 1, selectedDay + 1))}
             disabled={selectedDay === days.length - 1}
-            className="p-3 hover:bg-slate-500/10 dark:hover:bg-white/10 rounded-xl disabled:opacity-30 transition-all active:scale-95"
+            className="p-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full disabled:opacity-30 transition-all active:scale-90"
           >
             <ChevronRight className="w-6 h-6" />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-10">
-        {/* Day Navigation Sidebar (Desktop) / Horizontal Scroll (Mobile) */}
-        <div className="lg:h-[calc(100vh-280px)] overflow-x-auto lg:overflow-y-auto no-scrollbar lg:custom-scrollbar flex lg:flex-col gap-3 pb-4 lg:pb-0 px-1">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-12">
+        {/* Day Navigation */}
+        <div className="lg:h-[calc(100vh-320px)] overflow-x-auto lg:overflow-y-auto no-scrollbar lg:custom-scrollbar flex lg:flex-col gap-4 pb-6 lg:pb-0 px-1 snap-x">
           {days.map((day: any, i: number) => {
             const completedTasks = day.tasks.filter((t: any) => t.completed).length;
             const isFullyCompleted = completedTasks === day.tasks.length;
@@ -50,21 +53,23 @@ export default function StudyPlan({ plan, onToggleTask }: StudyPlanProps) {
                 key={i}
                 onClick={() => setSelectedDay(i)}
                 className={cn(
-                  "min-w-[120px] lg:min-w-0 text-left p-4 md:p-5 rounded-2xl transition-all duration-300 group shrink-0 border",
+                  "min-w-[140px] lg:min-w-0 text-left p-6 rounded-[2rem] transition-all duration-500 group shrink-0 border snap-center",
                   selectedDay === i 
-                    ? "bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-500/20 scale-[1.02]" 
-                    : "bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-blue-500/50 text-slate-600 dark:text-white/60 hover:text-blue-600 dark:hover:text-white"
+                    ? "bg-blue-600 text-white border-blue-500 shadow-2xl shadow-blue-500/30 scale-[1.05]" 
+                    : "bg-white dark:bg-white/5 border-slate-200/50 dark:border-white/5 hover:border-blue-500/50 text-slate-500 dark:text-white/40"
                 )}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-black text-sm md:text-lg font-display">Day {day.day}</span>
-                  {isFullyCompleted && <CheckCircle2 className="w-4 h-4 text-green-400" />}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-black text-sm md:text-xl font-display italic">Day {day.day}</span>
+                  {isFullyCompleted ? (
+                    <CheckCircle2 className="w-5 h-5 text-green-400" />
+                  ) : (
+                    <div className="w-2 h-2 rounded-full bg-blue-500/20" />
+                  )}
                 </div>
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] md:text-xs font-bold uppercase tracking-wider opacity-60">
-                    {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </p>
-                  <p className="text-[10px] font-black opacity-40">{completedTasks}/{day.tasks.length}</p>
+                <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-widest opacity-60">
+                   {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                   <span className="text-xs">{completedTasks}/{day.tasks.length}</span>
                 </div>
               </button>
             );
@@ -72,73 +77,80 @@ export default function StudyPlan({ plan, onToggleTask }: StudyPlanProps) {
         </div>
 
         {/* Tasks View */}
-        <div className="lg:col-span-3 space-y-6 md:space-y-8">
-          <div className="glass-card p-6 md:p-10 bg-gradient-to-br from-blue-600/10 to-purple-600/10 border-blue-500/20">
-            <div className="flex items-center gap-4 md:gap-6">
-              <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/10">
-                <Calendar className="w-6 h-6 md:w-8 md:h-8 text-blue-600 dark:text-blue-400" />
+        <div className="lg:col-span-3 space-y-8 md:space-y-12">
+          <div className="glass-card p-8 md:p-14 bg-gradient-to-br from-blue-600/[0.05] to-purple-600/[0.05] border-blue-500/20 rounded-[2.5rem] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-blue-500/[0.03] blur-[100px] rounded-full pointer-events-none" />
+            <div className="flex flex-col md:flex-row md:items-center gap-8 relative z-10">
+              <div className="w-20 h-20 md:w-28 md:h-28 bg-blue-600 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-blue-500/40 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                <Calendar className="w-10 h-10 md:w-14 md:h-14 text-white" />
               </div>
-              <div>
-                <h2 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white font-display">
+              <div className="space-y-2">
+                <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white font-display tracking-tight leading-none italic">
                   {new Date(currentDay.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                 </h2>
-                <p className="text-xs md:text-base text-slate-500 dark:text-white/60 font-bold uppercase tracking-widest mt-1">Target: {currentDay.tasks.length} learning modules</p>
+                <div className="flex items-center gap-3">
+                   <div className="h-1.5 w-12 bg-blue-500 rounded-full" />
+                   <p className="text-xs md:text-lg text-slate-500 dark:text-white/60 font-black uppercase tracking-widest">{currentDay.tasks.length} Learning Modules</p>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {currentDay.tasks.map((task: any, i: number) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.05 }}
                 onClick={() => onToggleTask(selectedDay, i)}
                 className={cn(
-                  "glass-card p-6 flex flex-col justify-between gap-6 group transition-all border cursor-pointer select-none",
+                  "glass-card p-8 md:p-10 flex flex-col justify-between gap-8 group transition-all border cursor-pointer select-none rounded-[2.5rem] relative overflow-hidden",
                   task.completed 
                     ? "opacity-60 bg-green-500/5 border-green-500/20" 
-                    : "hover:border-blue-500/40 hover:bg-white dark:hover:bg-[#1e293b]/50"
+                    : "hover:border-blue-500/40 hover:bg-blue-600/[0.01] dark:hover:bg-white/[0.01] border-slate-200/50 dark:border-white/5"
                 )}
               >
                 <div>
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex justify-between items-start mb-6">
                     <div className={cn(
-                      "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300",
+                      "w-16 h-16 rounded-[1.5rem] flex items-center justify-center shrink-0 transition-all duration-500 shadow-inner",
                       task.completed 
-                        ? "bg-green-500/10 text-green-600 outline outline-green-500/20" 
-                        : "bg-slate-500/5 text-slate-400 group-hover:bg-blue-600/10 group-hover:text-blue-500"
+                        ? "bg-green-500 text-white shadow-lg shadow-green-500/30" 
+                        : "bg-blue-600/5 text-blue-500 border border-blue-500/10 group-hover:bg-blue-600 group-hover:text-white"
                     )}>
-                      {task.completed ? <CheckCircle2 className="w-6 h-6" /> : <BookOpen className="w-6 h-6" />}
+                      {task.completed ? <CheckCircle2 className="w-8 h-8" /> : <BookOpen className="w-8 h-8" />}
                     </div>
                     <span className={cn(
-                      "text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-black font-display border",
+                      "text-[10px] md:text-xs uppercase tracking-[0.2em] px-4 py-2 rounded-full font-black border",
                       task.priority === 'high' 
                         ? "bg-red-500/10 text-red-500 border-red-500/20" 
                         : "bg-blue-500/10 text-blue-500 border-blue-500/20"
                     )}>
-                      {task.priority}
+                      {task.priority} Priority
                     </span>
                   </div>
                   <h3 className={cn(
-                    "text-xl font-black leading-tight mb-2 font-display",
+                    "text-2xl md:text-3xl font-black leading-tight mb-4 font-display tracking-tight",
                     task.completed && "line-through text-slate-400 dark:text-white/30"
                   )}>
                     {task.topic}
                   </h3>
-                  <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-bold">
-                    <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {task.duration}</span>
-                    <span className="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full" />
-                    <span className="capitalize">{task.type} session</span>
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest">
+                    <span className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 px-3 py-1.5 rounded-full"><Clock className="w-4 h-4" /> {task.duration}</span>
+                    <span className="w-1.5 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full" />
+                    <span className="bg-slate-100 dark:bg-white/5 px-3 py-1.5 rounded-full">{task.type}</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Status</span>
-                  <span className={cn("text-xs font-black", task.completed ? "text-green-500" : "text-blue-500")}>
-                    {task.completed ? 'COMPLETED' : 'PENDING'}
-                  </span>
+                <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-white/5">
+                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Module Status</span>
+                  <div className="flex items-center gap-2">
+                    <div className={cn("w-2 h-2 rounded-full animate-pulse", task.completed ? "bg-green-500" : "bg-blue-500")} />
+                    <span className={cn("text-xs font-black tracking-widest", task.completed ? "text-green-500" : "text-blue-500")}>
+                      {task.completed ? 'VERIFIED' : 'ACTIVE'}
+                    </span>
+                  </div>
                 </div>
               </motion.div>
             ))}

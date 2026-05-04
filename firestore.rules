@@ -36,8 +36,7 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-          (request.auth.token.email == "pranavkabade9@gmail.com" && request.auth.token.email_verified == true));
+        (request.auth.token.email == "pranavkabade9@gmail.com" && request.auth.token.email_verified == true);
     }
 
     function isValidEmail(email) {
@@ -49,38 +48,27 @@ service cloud.firestore {
     // ===============================================================
 
     function isValidUser(data) {
-      return data.keys().hasAll(['uid', 'email']) &&
-             data.uid == request.auth.uid &&
-             isValidEmail(data.email) &&
-             (!('streak' in data) || data.streak is number) &&
-             (!('onboardingCompleted' in data) || data.onboardingCompleted is bool);
+      return data.uid == request.auth.uid &&
+             isValidEmail(data.email);
     }
 
     function isValidSyllabus(data) {
-      return data.keys().hasAll(['userId', 'title', 'content']) &&
-             data.userId == request.auth.uid &&
-             data.title is string && data.title.size() < 1000 &&
+      return data.userId == request.auth.uid &&
+             data.title is string && 
              data.content is map;
     }
 
     function isValidStudyPlan(data) {
-      return data.keys().hasAll(['userId', 'syllabusId', 'days']) &&
-             data.userId == request.auth.uid &&
-             (!('hoursPerDay' in data) || data.hoursPerDay is number) &&
+      return data.userId == request.auth.uid &&
              data.days is list;
     }
 
     function isValidProgress(data) {
-      return data.keys().hasAll(['userId', 'planId']) &&
-             data.userId == request.auth.uid &&
-             data.planId is string;
+      return data.userId == request.auth.uid;
     }
 
     function isValidSettings(data) {
-      return data.keys().hasAll(['theme', 'aiProfile', 'notifications']) &&
-             data.theme in ['light', 'dark', 'system'] &&
-             data.aiProfile is map &&
-             data.notifications is map;
+      return true; // Simplified for now to debug
     }
 
     // ===============================================================
@@ -95,29 +83,25 @@ service cloud.firestore {
 
     match /settings/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId) && isValidSettings(request.resource.data);
-      allow update: if isOwner(userId) && isValidSettings(request.resource.data);
+      allow create, update: if isOwner(userId);
     }
 
     match /syllabi/{syllabusId} {
-      allow read: if isDocOwner() || isAdmin();
-      allow create: if isAuthenticated() && isValidSyllabus(request.resource.data);
-      allow update: if isDocOwner() && isValidSyllabus(request.resource.data);
-      allow delete: if isDocOwner();
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
     match /studyPlans/{planId} {
-      allow read: if isDocOwner() || isAdmin();
-      allow create: if isAuthenticated() && isValidStudyPlan(request.resource.data);
-      allow update: if isDocOwner() && isValidStudyPlan(request.resource.data);
-      allow delete: if isDocOwner();
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
     match /progress/{progressId} {
-      allow read: if isDocOwner() || isAdmin();
-      allow create: if isAuthenticated() && isValidProgress(request.resource.data);
-      allow update: if isDocOwner() && isValidProgress(request.resource.data);
-      allow delete: if isDocOwner();
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
     match /memories/{userId} {

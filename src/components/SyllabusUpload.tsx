@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, Calendar as CalendarIcon, Clock, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'motion/react';
+import { cn } from '../lib/utils';
 import { parseSyllabusLocally, generateStudyPlanLocally } from '../lib/studyLogic';
 import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -134,105 +135,128 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10 pb-20 lg:pb-0">
-      <div className="text-center space-y-6">
-        <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 dark:text-white font-display">
-          Master Your <span className="text-blue-500">Curriculum</span>
+    <div className="max-w-5xl mx-auto space-y-12 pb-32 lg:pb-0 px-1">
+      <div className="text-center lg:text-left space-y-6">
+        <h2 className="text-5xl md:text-8xl font-black tracking-tighter text-slate-900 dark:text-white font-display leading-none uppercase">
+          Build <br/> <span className="text-blue-600 underline decoration-blue-500/20 underline-offset-8">Curriculum</span>
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 text-xl md:text-2xl max-w-3xl mx-auto font-medium leading-relaxed">
-          The ultimate rule-based study engine. Faster, reliable, and completely private.
+        <p className="text-slate-400 dark:text-white/40 text-sm md:text-xl font-bold uppercase tracking-[0.3em] max-w-3xl">
+          Automated Study Logic Engine • v4.0.2
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
-        <div className="space-y-8">
-          <div className="glass-card p-6 md:p-10 space-y-6">
-            <h3 className="text-2xl font-black flex items-center gap-3 font-display">
-              <FileText className="w-8 h-8 text-blue-500" />
-              Syllabus Input
-            </h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-14">
+        <div className="space-y-10">
+          <div className="glass-card p-8 md:p-14 space-y-10 rounded-[3rem] relative overflow-hidden">
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-blue-500/[0.02] blur-[100px] rounded-full pointer-events-none" />
+            <div className="space-y-4 text-left">
+              <h3 className="text-2xl md:text-3xl font-black flex items-center gap-4 font-display">
+                <FileText className="w-8 h-8 text-blue-600" />
+                Input Node
+              </h3>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest ml-12">Binary or Text Format</p>
+            </div>
+
             <div 
               {...getRootProps()} 
-              className={`border-2 border-dashed rounded-2xl p-10 md:p-16 text-center transition-all cursor-pointer ${
-                isDragActive ? 'border-blue-500 bg-blue-500/10' : 'border-slate-200 dark:border-white/10 hover:border-blue-500/50 dark:hover:border-blue-500/50'
-              } ${file ? 'border-blue-500/50 bg-blue-500/5' : 'bg-slate-500/5 dark:bg-white/5'}`}
+              className={cn(
+                "border-4 border-dashed rounded-[2.5rem] p-10 md:p-20 text-center transition-all cursor-pointer group",
+                isDragActive ? 'border-blue-500 bg-blue-500/5' : 'border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] hover:border-blue-500/50',
+                file && 'border-blue-600 bg-blue-600/[0.01]'
+              )}
             >
               <input {...getInputProps()} />
-              <Upload className={`w-12 h-12 mx-auto mb-4 ${file ? 'text-blue-500 dark:text-blue-400' : 'text-slate-300 dark:text-white/20'}`} />
+              <div className={cn(
+                "w-20 h-20 mx-auto mb-6 rounded-3xl flex items-center justify-center transition-all duration-500",
+                file ? "bg-blue-600 text-white shadow-2xl shadow-blue-500/30" : "bg-white dark:bg-white/5 text-slate-300 group-hover:scale-110"
+              )}>
+                <Upload className="w-10 h-10" />
+              </div>
               {file ? (
                 <div className="space-y-2">
-                  <p className="text-lg font-black text-blue-600 dark:text-blue-400">{file.name}</p>
-                  <p className="text-xs text-slate-400 dark:text-white/40 font-bold uppercase tracking-widest">Click to change file</p>
+                  <p className="text-xl font-black text-blue-600 tracking-tight uppercase">{file.name}</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-3">Node Connected</p>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  <p className="text-base font-bold text-slate-600 dark:text-white/80">Drag & drop PDF or click to browse</p>
-                  <p className="text-xs text-slate-400 dark:text-white/40 font-medium">Max file size: 5MB</p>
+                <div className="space-y-3">
+                  <p className="text-lg font-black text-slate-900 dark:text-white font-display">PDF DROP</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-loose">Automated Parsing Required <br/> (Maximum 5MB)</p>
                 </div>
               )}
             </div>
-            {error && (
-              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-600 dark:text-red-400 text-sm font-bold">
-                <AlertCircle className="w-5 h-5 shrink-0" />
-                <p>{error}</p>
+
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 px-4">
+                <div className="h-[1px] flex-1 bg-slate-100 dark:bg-white/5" />
+                <span className="text-[10px] font-black text-slate-300 dark:text-white/10 uppercase tracking-[0.3em]">Manual Entry</span>
+                <div className="h-[1px] flex-1 bg-slate-100 dark:bg-white/5" />
               </div>
-            )}
-            <div className="relative">
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Or paste your syllabus text here..."
-                className="w-full h-64 bg-slate-500/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all resize-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 font-medium"
+                placeholder="Paste Raw Curriculum Data..."
+                className="w-full h-48 bg-slate-50 dark:bg-white/[0.01] border border-slate-100 dark:border-white/5 rounded-3xl p-8 text-sm focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all resize-none font-medium"
               />
             </div>
           </div>
         </div>
 
-        <div className="space-y-8">
-          <div className="glass-card p-6 md:p-10 space-y-8">
-            <h3 className="text-2xl font-black flex items-center gap-3 font-display">
-              <CalendarIcon className="w-8 h-8 text-purple-500" />
-              Study Constraints
-            </h3>
+        <div className="space-y-10">
+          <div className="glass-card p-8 md:p-14 space-y-12 rounded-[3rem] text-left">
+            <div className="space-y-4">
+              <h3 className="text-2xl md:text-3xl font-black flex items-center gap-4 font-display uppercase tracking-tight">
+                <CalendarIcon className="w-8 h-8 text-purple-600" />
+                Weights
+              </h3>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest ml-12">Temporal & Cognitive Constraints</p>
+            </div>
             
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-white/40">Exam Date</label>
-                <input
-                  type="date"
-                  value={examDate}
-                  onChange={(e) => setExamDate(e.target.value)}
-                  className="w-full bg-slate-500/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 md:p-5 focus:outline-none focus:ring-4 focus:ring-blue-500/20 text-slate-900 dark:text-white font-bold"
-                />
-              </div>
-
+            <div className="space-y-10">
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-white/40">Daily Study Hours</label>
-                  <span className="px-3 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-black text-sm">{hoursPerDay}h</span>
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Target Assessment Date</label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={examDate}
+                    onChange={(e) => setExamDate(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-2xl p-6 md:p-8 focus:outline-none focus:ring-4 focus:ring-blue-600/10 text-slate-900 dark:text-white font-black text-xl"
+                  />
+                  <div className="absolute right-6 top-1/2 -translate-y-1/2 p-3 bg-white dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5">
+                    <Clock className="w-6 h-6 text-slate-300" />
+                  </div>
                 </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="16"
-                  value={hoursPerDay}
-                  onChange={(e) => setHoursPerDay(parseInt(e.target.value))}
-                  className="w-full h-2 bg-slate-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                />
               </div>
 
-              <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-white/40">Difficulty Level</label>
-                <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-6">
+                <div className="flex justify-between items-end px-1">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Chronological Bandwidth</label>
+                  <span className="text-2xl font-black text-blue-600 font-display">{hoursPerDay}h <span className="text-xs text-slate-400 not-italic uppercase tracking-widest ml-1">Daily</span></span>
+                </div>
+                <div className="relative p-2">
+                  <input
+                    type="range"
+                    min="1"
+                    max="16"
+                    value={hoursPerDay}
+                    onChange={(e) => setHoursPerDay(parseInt(e.target.value))}
+                    className="w-full h-3 bg-slate-100 dark:bg-white/5 rounded-full appearance-none cursor-pointer accent-blue-600"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Density Level</label>
+                <div className="grid grid-cols-3 gap-4">
                   {['easy', 'medium', 'hard'].map((level) => (
                     <button
                       key={level}
                       onClick={() => setDifficulty(level)}
-                      className={`py-3 md:py-4 rounded-2xl text-sm font-black capitalize transition-all border ${
+                      className={cn(
+                        "py-5 rounded-3xl text-sm font-black uppercase tracking-widest transition-all border",
                         difficulty === level 
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/20' 
-                          : 'bg-slate-500/5 dark:bg-white/5 text-slate-500 dark:text-white/60 hover:bg-slate-500/10 dark:hover:bg-white/10 border-slate-200 dark:border-white/10'
-                      }`}
+                          ? 'bg-blue-600 text-white border-blue-500 shadow-2xl shadow-blue-600/30 -translate-y-1' 
+                          : 'bg-slate-50 dark:bg-white/[0.02] text-slate-400 border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10'
+                      )}
                     >
                       {level}
                     </button>
@@ -245,18 +269,20 @@ export default function SyllabusUpload({ onComplete, isGuest }: SyllabusUploadPr
           <button
             onClick={handleProcess}
             disabled={loading || (!text && !file) || !examDate}
-            className="w-full py-5 md:py-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-blue-500/20 group"
+            className="w-full py-8 md:py-10 bg-black dark:bg-white hover:bg-slate-900 dark:hover:bg-slate-100 disabled:opacity-20 text-white dark:text-black font-black rounded-[2.5rem] flex items-center justify-center gap-6 transition-all shadow-2xl active:scale-95 group relative overflow-hidden"
           >
+            <div className="absolute inset-0 bg-blue-600 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-700 opacity-10" />
+            
             {loading ? (
-              <div className="flex items-center gap-4">
-                <Loader2 className="w-6 h-6 animate-spin" />
-                <span className="text-lg">{loadingStep || 'Processing...'}</span>
+              <div className="flex items-center gap-6 z-10 transition-all">
+                <Loader2 className="w-8 h-8 animate-spin" />
+                <span className="text-xl md:text-2xl tracking-tight uppercase">{loadingStep || 'Processing Data Stream...'}</span>
               </div>
             ) : (
-              <>
-                <span className="text-lg">Build Examora Plan</span>
-                <ChevronRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-              </>
+              <div className="flex items-center gap-6 z-10">
+                <span className="text-xl md:text-2xl font-black uppercase tracking-tight">Generate Logic RoadMap</span>
+                <ChevronRight className="w-8 h-8 group-hover:translate-x-4 transition-transform" />
+              </div>
             )}
           </button>
         </div>
